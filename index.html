@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Калькулятор растаможки авто — Уссурийск</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121a30;
+      --panel-2: #17213d;
+      --panel-3: #0f1730;
+      --text: #f3f7ff;
+      --muted: #9fb0d1;
+      --line: #273556;
+      --accent: #60a5fa;
+      --accent-2: #22c55e;
+      --warn: #f59e0b;
+      --danger: #f43f5e;
+      --shadow: 0 20px 40px rgba(0, 0, 0, 0.28);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: linear-gradient(180deg, #09101d 0%, #0b1020 100%); color: var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { min-height: 100vh; }
+    .wrap { max-width: 1440px; margin: 0 auto; padding: 20px; }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+    .hero-card, .card {
+      background: linear-gradient(180deg, rgba(23, 33, 61, 0.98) 0%, rgba(15, 23, 48, 0.98) 100%);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+    .hero-card { padding: 22px; }
+    h1 { margin: 0 0 10px; font-size: clamp(28px, 4vw, 42px); line-height: 1.05; }
+    .subtitle { color: var(--muted); font-size: 15px; line-height: 1.5; margin-bottom: 16px; }
+    .pill-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill {
+      font-size: 13px; color: #dce8ff; background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.25);
+      padding: 8px 12px; border-radius: 999px;
+    }
+    .hero-side { padding: 22px; display: grid; gap: 12px; }
+    .hero-side .big {
+      font-size: 15px; color: var(--muted); line-height: 1.5;
+    }
+    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.9fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .stack { display: grid; gap: 18px; }
+    .card { padding: 18px; }
+    .card h2 { margin: 0 0 14px; font-size: 22px; }
+    .section-head { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; }
+    .hint { color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .muted { color: var(--muted); }
+
+    .grid { display: grid; gap: 14px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    label { display: grid; gap: 8px; font-size: 13px; color: #d8e5ff; }
+    input, select, textarea, button {
+      font: inherit;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      outline: none;
+    }
+    input, select, textarea {
+      background: rgba(8, 13, 27, 0.72);
+      color: var(--text);
+      padding: 13px 14px;
+      width: 100%;
+      transition: border-color .15s ease, transform .15s ease;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .suffix {
+      min-width: 94px;
+      text-align: center;
+      background: rgba(96,165,250,0.1);
+      color: #dbeafe;
+      border: 1px solid rgba(96,165,250,0.25);
+      padding: 12px 10px;
+      border-radius: 14px;
+    }
+
+    button {
+      cursor: pointer;
+      padding: 12px 16px;
+      color: white;
+      background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+      border: 1px solid rgba(147, 197, 253, 0.18);
+      box-shadow: 0 10px 20px rgba(37,99,235,0.28);
+      transition: transform .12s ease, filter .12s ease;
+    }
+    button:hover { transform: translateY(-1px); filter: brightness(1.04); }
+    button.secondary { background: rgba(255,255,255,0.04); box-shadow: none; border-color: var(--line); color: var(--text); }
+    button.success { background: linear-gradient(180deg, #16a34a 0%, #15803d 100%); box-shadow: 0 10px 20px rgba(34,197,94,0.2); }
+    button.warn { background: linear-gradient(180deg, #d97706 0%, #b45309 100%); box-shadow: 0 10px 20px rgba(245,158,11,0.18); }
+    button.danger { background: linear-gradient(180deg, #e11d48 0%, #be123c 100%); box-shadow: 0 10px 20px rgba(244,63,94,0.18); }
+
+    .inline-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .tiny { font-size: 12px; }
+
+    .toggle-box {
+      display: flex; flex-wrap: wrap; gap: 10px;
+    }
+    .toggle-box .chip {
+      padding: 10px 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,0.03); color: var(--text);
+      cursor: pointer; user-select: none;
+    }
+    .toggle-box .chip.active { background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.35); }
+
+    .aside { position: sticky; top: 16px; display: grid; gap: 18px; }
+    .summary-card { padding: 18px; }
+    .summary-main { display: grid; gap: 10px; margin-bottom: 14px; }
+    .summary-amount { font-size: clamp(28px, 4vw, 42px); font-weight: 800; line-height: 1; }
+    .summary-caption { color: var(--muted); }
+    .metric-list { display: grid; gap: 10px; }
+    .metric {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 12px 14px;
+    }
+    .metric .name { color: var(--muted); }
+    .metric .value { font-weight: 700; }
+
+    .result-table {
+      width: 100%; border-collapse: collapse; font-size: 14px; overflow: hidden; border-radius: 16px; border: 1px solid var(--line);
+    }
+    .result-table th, .result-table td { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+    .result-table th { text-align: left; color: var(--muted); background: rgba(255,255,255,0.03); }
+    .result-table tr:last-child td { border-bottom: none; }
+    .result-table td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+    .total-row td { font-size: 16px; font-weight: 800; }
+
+    .note-box {
+      border-left: 4px solid var(--warn);
+      background: rgba(245,158,11,0.08);
+      padding: 14px 14px 14px 16px; border-radius: 14px;
+      color: #ffe7c2; line-height: 1.5; font-size: 13px;
+    }
+    .ok-box {
+      border-left: 4px solid var(--accent-2);
+      background: rgba(34,197,94,0.08);
+      padding: 14px 14px 14px 16px; border-radius: 14px;
+      color: #dcfce7; line-height: 1.5; font-size: 13px;
+    }
+
+    .saved-list { display: grid; gap: 10px; }
+    .saved-item {
+      display: grid; gap: 8px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,0.025);
+    }
+    .saved-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,0.04); color: var(--muted); font-size: 12px; }
+
+    .rate-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .rate-box { padding: 12px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
+    .rate-code { color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+    .rate-val { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    .footer-line { color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .hidden { display: none !important; }
+    .mono { font-variant-numeric: tabular-nums; }
+
+    @media (max-width: 1120px) {
+      .hero, .layout { grid-template-columns: 1fr; }
+      .aside { position: static; }
+      .rate-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .rate-grid { grid-template-columns: 1fr; }
+      .wrap { padding: 14px; }
+      .hero-card, .hero-side, .card, .summary-card { padding: 16px; }
+      .result-table th, .result-table td { padding: 10px; }
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      .hero-actions, .aside .card:not(.summary-card), .card.no-print { display: none !important; }
+      .card, .summary-card, .hero-card, .hero-side { box-shadow: none; background: white; border-color: #ddd; color: black; }
+      .metric, .rate-box, .saved-item { background: white; border-color: #ddd; color: black; }
+      .layout { grid-template-columns: 1fr; }
+      .aside { position: static; }
+      .summary-amount, h1, h2 { color: black; }
+      .subtitle, .hint, .muted, .name, .summary-caption, .footer-line, .rate-code { color: #555 !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-card">
+        <h1>Калькулятор растаможки авто под ключ в Уссурийске</h1>
+        <div class="subtitle">
+          Усиленная автономная HTML-страница для расчёта стоимости автомобиля из Китая и других рынков с учётом валюты покупки, пошлины, НДС, акциза, утильсбора, комиссий ВТБ, экспортёра, брокера, СВХ и прочих затрат.
+        </div>
+        <div class="pill-row">
+          <span class="pill">1 файл</span>
+          <span class="pill">Открывается локально</span>
+          <span class="pill">Автообновление курсов</span>
+          <span class="pill">Сохранение расчётов</span>
+          <span class="pill">Печать / экспорт JSON</span>
+        </div>
+      </div>
+      <div class="hero-card hero-side">
+        <div class="big">
+          Встроены два режима расчёта: <b>детальный импорт</b> с раздельными налогами и <b>личный ввоз</b> по единым ставкам для авто с ДВС/гибридов. Все спорные или меняющиеся ставки можно корректировать вручную без правки кода.
+        </div>
+        <div class="hero-actions">
+          <button id="btnRecalcTop">Пересчитать</button>
+          <button class="secondary" id="btnRefreshRatesTop">Обновить курсы</button>
+          <button class="secondary" id="btnPrintTop">Печать / PDF</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="stack">
+        <div class="card">
+          <div class="section-head">
+            <h2>1. База сделки</h2>
+            <div class="hint">Цена авто, валюта покупки, возраст, двигатель и тип силовой установки.</div>
+          </div>
+          <div class="grid grid-4">
+            <label>
+              Название / примечание
+              <input id="carLabel" placeholder="Например: Toyota RAV4 2023, Китай" />
+            </label>
+            <label>
+              Цена авто
+              <input id="purchasePrice" type="number" min="0" step="0.01" value="150000" />
+            </label>
+            <label>
+              Валюта покупки
+              <select id="purchaseCurrency">
+                <option value="CNY">Китайский юань (CNY)</option>
+                <option value="USD">Доллар США (USD)</option>
+                <option value="EUR">Евро (EUR)</option>
+                <option value="JPY">Японская иена (JPY)</option>
+                <option value="RUB">Российский рубль (RUB)</option>
+                <option value="KZT">Тенге (KZT)</option>
+                <option value="KRW">Корейская вона (KRW)</option>
+                <option value="BYN">Белорусский рубль (BYN)</option>
+              </select>
+            </label>
+            <label>
+              Год выпуска
+              <input id="carYear" type="number" min="1990" max="2100" step="1" value="2023" />
+            </label>
+          </div>
+          <div class="grid grid-4" style="margin-top:14px;">
+            <label>
+              Возраст авто, лет
+              <input id="carAge" type="number" min="0" max="40" step="0.1" value="2.5" />
+            </label>
+            <label>
+              Объём двигателя, см³
+              <input id="engineCc" type="number" min="0" step="1" value="1998" />
+            </label>
+            <label>
+              Мощность, л.с.
+              <input id="powerHp" type="number" min="0" step="0.1" value="190" />
+            </label>
+            <label>
+              Мощность, кВт
+              <input id="powerKw" type="number" min="0" step="0.1" value="139.8" />
+            </label>
+          </div>
+          <div class="grid grid-3" style="margin-top:14px;">
+            <label>
+              Тип силовой установки
+              <select id="powertrainType">
+                <option value="gasoline">Бензин</option>
+                <option value="diesel">Дизель</option>
+                <option value="electric">Электро</option>
+                <option value="parallelHybrid">Параллельный гибрид</option>
+                <option value="seriesHybrid">Последовательный гибрид</option>
+                <option value="hydrogen">Водород</option>
+              </select>
+            </label>
+            <label>
+              Страна покупки
+              <input id="originCountry" value="Китай" />
+            </label>
+            <label>
+              Целевой пункт выдачи
+              <input id="destinationPoint" value="Уссурийск / граница КНР–РФ" />
+            </label>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>2. Режим расчёта таможни</h2>
+            <div class="hint">Переключай методику расчёта под кейс клиента.</div>
+          </div>
+          <div class="grid grid-3">
+            <label>
+              Методика
+              <select id="calcMode">
+                <option value="detail">Детальный импорт: пошлина + НДС + акциз + утильсбор</option>
+                <option value="personal">Личный ввоз: единые ставки ЕЭК для авто с ДВС/гибридов</option>
+              </select>
+            </label>
+            <label>
+              Ставка НДС, %
+              <input id="vatRate" type="number" min="0" step="0.01" value="22" />
+            </label>
+            <label>
+              Применять акциз
+              <select id="applyExcise">
+                <option value="yes">Да</option>
+                <option value="no">Нет</option>
+              </select>
+            </label>
+          </div>
+          <div class="grid grid-3" style="margin-top:14px;">
+            <label>
+              Корректировка таможенной стоимости, ₽
+              <input id="customsAdjustRub" type="number" min="0" step="1" value="0" />
+            </label>
+            <label>
+              Таможенные сборы за операции
+              <select id="customsFeeMode">
+                <option value="auto">Авторасчёт по стоимости</option>
+                <option value="manual">Ручной ввод</option>
+              </select>
+            </label>
+            <label>
+              Таможенный сбор вручную, ₽
+              <input id="customsFeeManual" type="number" min="0" step="1" value="0" />
+            </label>
+          </div>
+
+          <div id="detailBlock" style="margin-top:14px;">
+            <div class="ok-box" style="margin-bottom:14px;">
+              В этом режиме страница отдельно считает таможенную пошлину, НДС, акциз и утильсбор. Для коммерческих кейсов блоки пошлины и утильсбора сделаны редактируемыми, потому что итог может зависеть от точного кода ТН ВЭД, документов и финальной классификации брокером.
+            </div>
+            <div class="grid grid-4">
+              <label>
+                Пошлина: ставка, %
+                <input id="dutyPercent" type="number" min="0" step="0.01" value="15" />
+              </label>
+              <label>
+                Минимум, EUR/см³
+                <input id="dutyMinEurPerCc" type="number" min="0" step="0.0001" value="0" />
+              </label>
+              <label>
+                Включить минимум EUR/см³
+                <select id="dutyUseMinCc">
+                  <option value="no">Нет</option>
+                  <option value="yes">Да</option>
+                </select>
+              </label>
+              <label>
+                Утильсбор: режим
+                <select id="utilMode">
+                  <option value="manualCoeff">Ручной коэффициент</option>
+                  <option value="fixedAmount">Фиксированная сумма</option>
+                  <option value="benefitPersonal">Льготный личный ввоз ≤160 л.с.</option>
+                </select>
+              </label>
+            </div>
+            <div class="grid grid-4" style="margin-top:14px;">
+              <label>
+                Базовая ставка утильсбора, ₽
+                <input id="utilBase" type="number" min="0" step="1" value="20000" />
+              </label>
+              <label>
+                Коэффициент утильсбора
+                <input id="utilCoeff" type="number" min="0" step="0.0001" value="0.17" />
+              </label>
+              <label>
+                Фиксированный утильсбор, ₽
+                <input id="utilFixed" type="number" min="0" step="1" value="3400" />
+              </label>
+              <label>
+                Льготный сценарий
+                <select id="utilBenefitAge">
+                  <option value="new">До 3 лет — 3 400 ₽</option>
+                  <option value="old">Старше 3 лет — 5 200 ₽</option>
+                </select>
+              </label>
+            </div>
+            <div class="inline-actions" style="margin-top:14px;">
+              <button class="secondary tiny" data-duty-preset="ev15">Пресет пошлины EV/водород 15%</button>
+              <button class="secondary tiny" data-duty-preset="ice15">Пресет пошлины ДВС/гибрид 15%</button>
+              <button class="secondary tiny" data-util-preset="3400">Утиль 3 400 ₽</button>
+              <button class="secondary tiny" data-util-preset="5200">Утиль 5 200 ₽</button>
+            </div>
+          </div>
+
+          <div id="personalBlock" class="hidden" style="margin-top:14px;">
+            <div class="ok-box" style="margin-bottom:14px;">
+              Для личного ввоза авто с ДВС и гибридов применяется единая ставка по возрасту и рабочему объёму двигателя. Для электромобилей и водородных авто в этой странице оставлен редактируемый адвалорный пресет, так как расчёт по объёму двигателя к ним не применяется.
+            </div>
+            <div class="grid grid-3">
+              <label>
+                Возрастная категория
+                <select id="personalAgeBand">
+                  <option value="auto">Определять автоматически по возрасту</option>
+                  <option value="new">До 3 лет</option>
+                  <option value="mid">Старше 3, но не старше 5 лет</option>
+                  <option value="old">Старше 5 лет</option>
+                </select>
+              </label>
+              <label>
+                Ставка для EV/водород, %
+                <input id="personalEvDutyPercent" type="number" min="0" step="0.01" value="15" />
+              </label>
+              <label>
+                Утильсбор в личном режиме, ₽
+                <input id="personalUtilRub" type="number" min="0" step="1" value="3400" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>3. Комиссии и расходы</h2>
+            <div class="hint">Все дополнительные траты до выдачи авто в Уссурийске.</div>
+          </div>
+          <div class="grid grid-4">
+            <label>
+              Комиссия экспортёра, % от цены авто
+              <input id="exporterPercent" type="number" min="0" step="0.01" value="2" />
+            </label>
+            <label>
+              Комиссия экспортёра, фиксировано
+              <input id="exporterFixed" type="number" min="0" step="0.01" value="0" />
+            </label>
+            <label>
+              Валюта фикс. комиссии экспортёра
+              <select id="exporterFixedCurrency">
+                <option value="same">Та же, что и покупка авто</option>
+                <option value="RUB">RUB</option>
+                <option value="CNY">CNY</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="JPY">JPY</option>
+                <option value="KZT">KZT</option>
+                <option value="KRW">KRW</option>
+                <option value="BYN">BYN</option>
+              </select>
+            </label>
+            <label>
+              Расходы до границы / доставка, ₽
+              <input id="logisticsRub" type="number" min="0" step="1" value="0" />
+            </label>
+          </div>
+
+          <div class="grid grid-4" style="margin-top:14px;">
+            <label>
+              Банк / пресет комиссии
+              <select id="bankPreset">
+                <option value="none">Без комиссии</option>
+                <option value="vtbPersonalOnline">ВТБ физлицо — 2% онлайн</option>
+                <option value="vtbPersonalOffice">ВТБ физлицо — 2,5% в офисе</option>
+                <option value="vtbBusiness">ВТБ бизнес — 0,35%, мин $60, макс $300</option>
+                <option value="vtbBusinessPlusVc">ВТБ бизнес + валютный контроль</option>
+                <option value="manual">Ручной режим</option>
+              </select>
+            </label>
+            <label>
+              Ручная ставка банка, %
+              <input id="bankPercentManual" type="number" min="0" step="0.01" value="0" />
+            </label>
+            <label>
+              Ручной минимум, ₽
+              <input id="bankMinRub" type="number" min="0" step="1" value="0" />
+            </label>
+            <label>
+              Ручной максимум, ₽
+              <input id="bankMaxRub" type="number" min="0" step="1" value="0" />
+            </label>
+          </div>
+
+          <div class="grid grid-4" style="margin-top:14px;">
+            <label>
+              Брокер на границе, ₽
+              <input id="brokerRub" type="number" min="0" step="1" value="30000" />
+            </label>
+            <label>
+              СВХ на границе, ₽
+              <input id="svhRub" type="number" min="0" step="1" value="18000" />
+            </label>
+            <label>
+              Прочие расходы, ₽
+              <input id="otherRub" type="number" min="0" step="1" value="0" />
+            </label>
+            <label>
+              Комментарий к расходам
+              <input id="costNote" placeholder="Например: эвакуатор, страховка, осмотр" />
+            </label>
+          </div>
+        </div>
+
+        <div class="card no-print">
+          <div class="section-head">
+            <h2>4. Курсы валют</h2>
+            <div class="hint">Страница пытается получить живые курсы онлайн. Если API недоступен из браузера, можно работать на текущих значениях и править вручную.</div>
+          </div>
+          <div class="inline-actions" style="margin-bottom:14px;">
+            <button id="btnRefreshRates">Обновить курсы</button>
+            <button class="secondary" id="btnSetManualRates">Запомнить мои курсы</button>
+            <span class="tag" id="rateStatus">Источник: встроенные значения</span>
+            <span class="tag" id="rateDate">Дата курсов: —</span>
+          </div>
+          <div class="rate-grid" id="rateGrid"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>5. Разбивка расчёта</h2>
+            <div class="hint">Все суммы пересчитываются в рубли. Для личного ввоза единая ставка показывается отдельно от НДС и акциза.</div>
+          </div>
+          <table class="result-table" id="resultTable">
+            <thead>
+              <tr>
+                <th>Статья</th>
+                <th>Сумма, ₽</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div class="note-box" style="margin-top:14px;" id="calcNotice">
+            Внимание: финальная таможенная часть в реальной сделке зависит от точного кода ТН ВЭД, подтверждённой таможенной стоимости, комплектации, документов и расчёта брокера. Этот калькулятор предназначен для быстрого коммерческого ориентирования клиента и подготовки КП.
+          </div>
+        </div>
+      </div>
+
+      <aside class="aside">
+        <div class="summary-card card">
+          <div class="summary-main">
+            <div class="summary-caption">Итоговая стоимость под ключ в <span id="summaryDestination">Уссурийске</span></div>
+            <div class="summary-amount mono" id="totalRub">0 ₽</div>
+            <div class="summary-caption" id="summarySub">На основе текущих полей и курсов</div>
+          </div>
+          <div class="metric-list">
+            <div class="metric"><span class="name">Цена авто в ₽</span><span class="value mono" id="metricVehicleRub">0 ₽</span></div>
+            <div class="metric"><span class="name">Таможня / налоги</span><span class="value mono" id="metricTaxesRub">0 ₽</span></div>
+            <div class="metric"><span class="name">Банк + экспортёр</span><span class="value mono" id="metricBankExporterRub">0 ₽</span></div>
+            <div class="metric"><span class="name">Брокер + СВХ + прочее</span><span class="value mono" id="metricServicesRub">0 ₽</span></div>
+          </div>
+          <div class="inline-actions" style="margin-top:14px;">
+            <button id="btnRecalc">Пересчитать</button>
+            <button class="secondary" id="btnShare">Ссылка-снимок</button>
+          </div>
+        </div>
+
+        <div class="card no-print">
+          <div class="section-head">
+            <h2>6. Сохранённые расчёты</h2>
+            <div class="hint">Сохраняются в браузере локально.</div>
+          </div>
+          <div class="grid grid-2" style="margin-bottom:14px;">
+            <label>
+              Имя расчёта
+              <input id="scenarioName" placeholder="Например: Zeekr 001 для клиента Иван" />
+            </label>
+            <div style="display:flex; align-items:end; gap:10px;">
+              <button class="success" id="btnSaveScenario">Сохранить</button>
+              <button class="secondary" id="btnExportJson">Экспорт JSON</button>
+            </div>
+          </div>
+          <div class="saved-list" id="savedList"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>7. Что уже учтено</h2>
+          </div>
+          <div class="footer-line">
+            • валюта покупки: CNY, EUR, USD, JPY, RUB, KZT, KRW, BYN<br>
+            • цена авто, объём и мощность двигателя, возраст, тип силовой установки<br>
+            • утильсбор, пошлина, НДС, акциз, таможенные сборы<br>
+            • комиссия экспортёра, комиссия ВТБ, брокер, СВХ, прочие расходы<br>
+            • сценарий для коммерческого КП и для личного ввоза<br>
+            • печать, сохранение, обмен расчётом через hash-ссылку
+          </div>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <script>
+    const YEAR_NOW = 2026;
+    const STORAGE_KEYS = {
+      rates: 'uss_customs_rates_v1',
+      scenarios: 'uss_customs_scenarios_v1'
+    };
+
+    const fallbackRates = {
+      date: 'встроенные',
+      source: 'fallback',
+      RUB: 1,
+      USD: 78.75,
+      EUR: 89.8,
+      CNY: 10.95,
+      JPY: 0.54,
+      KZT: 0.16,
+      KRW: 0.052,
+      BYN: 26.98,
+    };
+
+    const powerBands = [
+      { max: 90, rate: 0 },
+      { max: 150, rate: 64 },
+      { max: 200, rate: 613 },
+      { max: 300, rate: 1004 },
+      { max: 400, rate: 1711 },
+      { max: 500, rate: 1771 },
+      { max: Infinity, rate: 1829 },
+    ];
+
+    const customsFeeBands = [
+      { max: 200000, fee: 775 },
+      { max: 450000, fee: 1550 },
+      { max: 1200000, fee: 3100 },
+      { max: 2700000, fee: 8530 },
+      { max: 4200000, fee: 12000 },
+      { max: 5500000, fee: 15500 },
+      { max: 7000000, fee: 20000 },
+      { max: 8000000, fee: 23000 },
+      { max: 9000000, fee: 25000 },
+      { max: 10000000, fee: 27000 },
+      { max: Infinity, fee: 30000 },
+    ];
+
+    const personalNewCarBands = [
+      { maxPriceEur: 8500, percent: 54, minEurPerCc: 2.5 },
+      { maxPriceEur: 16700, percent: 48, minEurPerCc: 3.5 },
+      { maxPriceEur: 42300, percent: 48, minEurPerCc: 5.5 },
+      { maxPriceEur: 84500, percent: 48, minEurPerCc: 7.5 },
+      { maxPriceEur: 169000, percent: 48, minEurPerCc: 15 },
+      { maxPriceEur: Infinity, percent: 48, minEurPerCc: 20 },
+    ];
+
+    const personalMidBands = [
+      { maxCc: 1000, eurPerCc: 1.5 },
+      { maxCc: 1500, eurPerCc: 1.7 },
+      { maxCc: 1800, eurPerCc: 2.5 },
+      { maxCc: 2300, eurPerCc: 2.7 },
+      { maxCc: 3000, eurPerCc: 3.0 },
+      { maxCc: Infinity, eurPerCc: 3.6 },
+    ];
+
+    const personalOldBands = [
+      { maxCc: 1000, eurPerCc: 3.0 },
+      { maxCc: 1500, eurPerCc: 3.2 },
+      { maxCc: 1800, eurPerCc: 3.5 },
+      { maxCc: 2300, eurPerCc: 4.8 },
+      { maxCc: 3000, eurPerCc: 5.0 },
+      { maxCc: Infinity, eurPerCc: 5.7 },
+    ];
+
+    const currencyNames = {
+      RUB: 'Российский рубль',
+      USD: 'Доллар США',
+      EUR: 'Евро',
+      CNY: 'Китайский юань',
+      JPY: 'Японская иена',
+      KZT: 'Тенге',
+      KRW: 'Корейская вона',
+      BYN: 'Белорусский рубль'
+    };
+
+    const fields = [
+      'carLabel','purchasePrice','purchaseCurrency','carYear','carAge','engineCc','powerHp','powerKw','powertrainType','originCountry','destinationPoint',
+      'calcMode','vatRate','applyExcise','customsAdjustRub','customsFeeMode','customsFeeManual','dutyPercent','dutyMinEurPerCc','dutyUseMinCc',
+      'utilMode','utilBase','utilCoeff','utilFixed','utilBenefitAge','personalAgeBand','personalEvDutyPercent','personalUtilRub',
+      'exporterPercent','exporterFixed','exporterFixedCurrency','logisticsRub','bankPreset','bankPercentManual','bankMinRub','bankMaxRub',
+      'brokerRub','svhRub','otherRub','costNote','scenarioName'
+    ];
+
+    const rateCodes = ['RUB','USD','EUR','CNY','JPY','KZT','KRW','BYN'];
+
+    let rates = loadRates();
+
+    function $(id) { return document.getElementById(id); }
+    function num(v) { const n = parseFloat(v); return Number.isFinite(n) ? n : 0; }
+    function round2(v) { return Math.round((v + Number.EPSILON) * 100) / 100; }
+    function fmtRub(v) { return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(v || 0); }
+    function fmtNum(v, d=2) { return new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 0, maximumFractionDigits: d }).format(v || 0); }
+
+    function rateOf(code) {
+      return num(rates[code]) || 0;
+    }
+
+    function convertToRub(amount, code) {
+      if (code === 'same') code = $('purchaseCurrency').value;
+      return num(amount) * rateOf(code);
+    }
+
+    function syncAgeFromYear() {
+      const y = num($('carYear').value);
+      if (!y) return;
+      const age = Math.max(0, round2(YEAR_NOW - y + 0.3));
+      if (document.activeElement !== $('carAge')) $('carAge').value = age;
+    }
+
+    function syncKwHp(source = 'hp') {
+      const hpEl = $('powerHp');
+      const kwEl = $('powerKw');
+      if (source === 'hp' && document.activeElement === hpEl) {
+        kwEl.value = round2(num(hpEl.value) * 0.735499);
+      } else if (source === 'kw' && document.activeElement === kwEl) {
+        hpEl.value = round2(num(kwEl.value) / 0.735499);
+      }
+    }
+
+    function getExciseRate(hp) {
+      const band = powerBands.find(b => hp <= b.max);
+      return band ? band.rate : 0;
+    }
+
+    function getCustomsFee(customsValueRub) {
+      return (customsFeeBands.find(b => customsValueRub <= b.max) || customsFeeBands.at(-1)).fee;
+    }
+
+    function getPersonalAgeBand(age) {
+      const manual = $('personalAgeBand').value;
+      if (manual !== 'auto') return manual;
+      if (age <= 3) return 'new';
+      if (age <= 5) return 'mid';
+      return 'old';
+    }
+
+    function calcPersonalDuty({ priceRub, priceEur, cc, age, powertrain }) {
+      const band = getPersonalAgeBand(age);
+      const isEvLike = ['electric', 'hydrogen'].includes(powertrain);
+      if (isEvLike) {
+        const pct = num($('personalEvDutyPercent').value) / 100;
+        return { dutyRub: priceRub * pct, meta: `Электро/водород: ${fmtNum(num($('personalEvDutyPercent').value),2)}%` };
+      }
+      if (band === 'new') {
+        const rule = personalNewCarBands.find(b => priceEur <= b.maxPriceEur) || personalNewCarBands.at(-1);
+        const adVal = priceRub * (rule.percent / 100);
+        const floor = cc * rule.minEurPerCc * rateOf('EUR');
+        return { dutyRub: Math.max(adVal, floor), meta: `До 3 лет: ${rule.percent}% / минимум ${rule.minEurPerCc} EUR/см³` };
+      }
+      const table = band === 'mid' ? personalMidBands : personalOldBands;
+      const rule = table.find(b => cc <= b.maxCc) || table.at(-1);
+      return { dutyRub: cc * rule.eurPerCc * rateOf('EUR'), meta: `${band === 'mid' ? '3–5 лет' : 'Старше 5 лет'}: ${rule.eurPerCc} EUR/см³` };
+    }
+
+    function calcBankFee(transferRub) {
+      const preset = $('bankPreset').value;
+      const usd = rateOf('USD');
+      let fee = 0;
+      let meta = 'Без комиссии';
+      if (preset === 'none') return { feeRub: 0, meta };
+      if (preset === 'vtbPersonalOnline') {
+        fee = transferRub * 0.02;
+        meta = 'ВТБ физлицо: 2% онлайн';
+      } else if (preset === 'vtbPersonalOffice') {
+        fee = transferRub * 0.025;
+        meta = 'ВТБ физлицо: 2,5% в офисе';
+      } else if (preset === 'vtbBusiness') {
+        fee = clamp(transferRub * 0.0035, 60 * usd, 300 * usd);
+        meta = 'ВТБ бизнес: 0,35%, мин $60, макс $300';
+      } else if (preset === 'vtbBusinessPlusVc') {
+        const wire = clamp(transferRub * 0.0035, 60 * usd, 300 * usd);
+        const vcBase = clamp(transferRub * 0.0025, 30 * usd, 2000 * usd);
+        const vcVat = vcBase * 0.22;
+        fee = wire + vcBase + vcVat;
+        meta = 'ВТБ бизнес: 0,35% + валютный контроль 0,25% + НДС 22% на валютный контроль';
+      } else if (preset === 'manual') {
+        fee = transferRub * (num($('bankPercentManual').value) / 100);
+        fee = Math.max(fee, num($('bankMinRub').value));
+        const mx = num($('bankMaxRub').value);
+        if (mx > 0) fee = Math.min(fee, mx);
+        meta = 'Ручная комиссия банка';
+      }
+      return { feeRub: fee, meta };
+    }
+
+    function clamp(v, min, max) {
+      return Math.min(Math.max(v, min), max);
+    }
+
+    function buildLine(name, value, note = '') {
+      return { name, value: round2(value), note };
+    }
+
+    function calculate() {
+      syncAgeFromYear();
+      const purchaseCurrency = $('purchaseCurrency').value;
+      const purchasePrice = num($('purchasePrice').value);
+      const priceRub = convertToRub(purchasePrice, purchaseCurrency);
+      const age = num($('carAge').value);
+      const cc = num($('engineCc').value);
+      const hp = num($('powerHp').value);
+      const kw = num($('powerKw').value);
+      const powertrain = $('powertrainType').value;
+      const calcMode = $('calcMode').value;
+
+      const exporterPercentRub = priceRub * (num($('exporterPercent').value) / 100);
+      const exporterFixedRub = convertToRub(num($('exporterFixed').value), $('exporterFixedCurrency').value);
+      const exporterRub = exporterPercentRub + exporterFixedRub;
+      const transferRub = priceRub + exporterRub;
+      const bank = calcBankFee(transferRub);
+
+      const customsValueRub = priceRub + num($('customsAdjustRub').value);
+      const customsFeeRub = $('customsFeeMode').value === 'manual' ? num($('customsFeeManual').value) : getCustomsFee(customsValueRub);
+
+      let dutyRub = 0;
+      let vatRub = 0;
+      let exciseRub = 0;
+      let utilRub = 0;
+      let dutyMeta = '';
+      let utilMeta = '';
+
+      if (calcMode === 'detail') {
+        const dutyPercent = num($('dutyPercent').value) / 100;
+        const adVal = customsValueRub * dutyPercent;
+        let floor = 0;
+        if ($('dutyUseMinCc').value === 'yes' && cc > 0) {
+          floor = cc * num($('dutyMinEurPerCc').value) * rateOf('EUR');
+        }
+        dutyRub = Math.max(adVal, floor);
+        dutyMeta = floor > 0 ? `max(${fmtNum(num($('dutyPercent').value),2)}% от ТС, минимум ${fmtNum(num($('dutyMinEurPerCc').value),4)} EUR/см³)` : `${fmtNum(num($('dutyPercent').value),2)}% от таможенной стоимости`;
+
+        if ($('applyExcise').value === 'yes') {
+          const exciseRate = getExciseRate(hp);
+          exciseRub = exciseRate * hp;
+        }
+
+        vatRub = (customsValueRub + dutyRub + exciseRub) * (num($('vatRate').value) / 100);
+
+        const utilMode = $('utilMode').value;
+        if (utilMode === 'manualCoeff') {
+          utilRub = num($('utilBase').value) * num($('utilCoeff').value);
+          utilMeta = `${fmtNum(num($('utilBase').value),0)} × ${fmtNum(num($('utilCoeff').value),4)}`;
+        } else if (utilMode === 'fixedAmount') {
+          utilRub = num($('utilFixed').value);
+          utilMeta = 'Фиксированная сумма';
+        } else {
+          const isOld = $('utilBenefitAge').value === 'old';
+          utilRub = isOld ? 5200 : 3400;
+          utilMeta = isOld ? 'Льготный сценарий: старше 3 лет' : 'Льготный сценарий: до 3 лет';
+        }
+      } else {
+        const priceEur = priceRub / Math.max(rateOf('EUR'), 0.000001);
+        const personalDuty = calcPersonalDuty({ priceRub, priceEur, cc, age, powertrain });
+        dutyRub = personalDuty.dutyRub;
+        dutyMeta = personalDuty.meta;
+        utilRub = num($('personalUtilRub').value);
+        utilMeta = 'Личный режим';
+        vatRub = 0;
+        exciseRub = 0;
+      }
+
+      const brokerRub = num($('brokerRub').value);
+      const svhRub = num($('svhRub').value);
+      const logisticsRub = num($('logisticsRub').value);
+      const otherRub = num($('otherRub').value);
+      const taxesRub = dutyRub + vatRub + exciseRub + utilRub + customsFeeRub;
+      const servicesRub = brokerRub + svhRub + logisticsRub + otherRub;
+      const totalRub = priceRub + exporterRub + bank.feeRub + taxesRub + servicesRub;
+
+      const rows = [
+        buildLine(`Цена авто (${purchaseCurrency})`, priceRub, `${fmtNum(purchasePrice, 2)} ${purchaseCurrency}`),
+        buildLine('Комиссия экспортёра', exporterRub, `${fmtNum(num($('exporterPercent').value),2)}% + фиксированная часть`),
+        buildLine('Комиссия банка / перевод в Китай', bank.feeRub, bank.meta),
+        buildLine('Корректировка таможенной стоимости', num($('customsAdjustRub').value), 'Доставка / страхование до границы / прочее'),
+        buildLine(calcMode === 'detail' ? 'Таможенная пошлина' : 'Единая ставка пошлин / налогов', dutyRub, dutyMeta),
+        buildLine('Таможенные сборы за операции', customsFeeRub, $('customsFeeMode').value === 'manual' ? 'Ручной режим' : 'Авто по стоимости'),
+        buildLine('Акциз', exciseRub, $('applyExcise').value === 'yes' ? `${fmtNum(getExciseRate(hp),0)} ₽/л.с.` : 'Не применяется'),
+        buildLine('НДС', vatRub, calcMode === 'detail' ? `${fmtNum(num($('vatRate').value),2)}%` : 'В личном режиме не выделяется отдельно'),
+        buildLine('Утильсбор', utilRub, utilMeta),
+        buildLine('Брокерские услуги', brokerRub),
+        buildLine('СВХ', svhRub),
+        buildLine('Доставка / логистика до Уссурийска', logisticsRub),
+        buildLine('Прочие расходы', otherRub, $('costNote').value),
+        buildLine('ИТОГО ПОД КЛЮЧ', totalRub)
+      ];
+
+      renderTable(rows);
+      $('totalRub').textContent = fmtRub(totalRub);
+      $('summaryDestination').textContent = $('destinationPoint').value || 'Уссурийске';
+      $('summarySub').textContent = `${$('calcMode').selectedOptions[0].textContent}`;
+      $('metricVehicleRub').textContent = fmtRub(priceRub);
+      $('metricTaxesRub').textContent = fmtRub(taxesRub);
+      $('metricBankExporterRub').textContent = fmtRub(bank.feeRub + exporterRub);
+      $('metricServicesRub').textContent = fmtRub(servicesRub);
+
+      const notice = calcMode === 'detail'
+        ? 'Детальный режим подходит для коммерческого ориентирования и КП. Проверь итоговую ставку пошлины и утильсбора по финальному коду ТН ВЭД и документам на конкретный автомобиль.'
+        : 'Личный режим удобен для быстрого ориентирования клиента по единой ставке. Для электромобилей и водородных авто адвалорная ставка в этом шаблоне оставлена редактируемой.';
+      $('calcNotice').textContent = notice;
+
+      return {
+        totals: {
+          priceRub, exporterRub, bankRub: bank.feeRub, dutyRub, customsFeeRub, exciseRub, vatRub, utilRub,
+          brokerRub, svhRub, logisticsRub, otherRub, taxesRub, servicesRub, totalRub, customsValueRub
+        },
+        meta: {
+          calcMode,
+          dutyMeta,
+          utilMeta,
+          bankMeta: bank.meta
+        },
+        rows
+      };
+    }
+
+    function renderTable(rows) {
+      const tbody = $('resultTable').querySelector('tbody');
+      tbody.innerHTML = '';
+      rows.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        if (idx === rows.length - 1) tr.className = 'total-row';
+        const td1 = document.createElement('td');
+        const title = document.createElement('div');
+        title.textContent = row.name;
+        td1.appendChild(title);
+        if (row.note) {
+          const note = document.createElement('div');
+          note.className = 'tiny muted';
+          note.textContent = row.note;
+          td1.appendChild(note);
+        }
+        const td2 = document.createElement('td');
+        td2.className = 'mono';
+        td2.textContent = fmtRub(row.value);
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderRates() {
+      const box = $('rateGrid');
+      box.innerHTML = '';
+      rateCodes.forEach(code => {
+        const div = document.createElement('div');
+        div.className = 'rate-box';
+        const name = currencyNames[code] || code;
+        div.innerHTML = `
+          <div class="rate-code">${code} — ${name}</div>
+          <label>
+            <input data-rate-code="${code}" type="number" min="0" step="0.0001" value="${fmtNum(rateOf(code), 6).replace(/\s/g,'')}" />
+          </label>
+          <div class="tiny muted" style="margin-top:8px;">₽ за 1 ${code === 'RUB' ? 'RUB' : code}</div>
+        `;
+        box.appendChild(div);
+      });
+      $('rateStatus').textContent = `Источник: ${rates.source || 'встроенные значения'}`;
+      $('rateDate').textContent = `Дата курсов: ${rates.date || '—'}`;
+      box.querySelectorAll('input[data-rate-code]').forEach(inp => {
+        inp.addEventListener('change', () => {
+          rates[inp.dataset.rateCode] = num(inp.value);
+          saveRates();
+          calculate();
+        });
+      });
+    }
+
+    function toggleModeUi() {
+      const mode = $('calcMode').value;
+      $('detailBlock').classList.toggle('hidden', mode !== 'detail');
+      $('personalBlock').classList.toggle('hidden', mode !== 'personal');
+    }
+
+    function collectState() {
+      const obj = {};
+      fields.forEach(id => obj[id] = $(id).value);
+      obj.rates = { ...rates };
+      return obj;
+    }
+
+    function applyState(state) {
+      if (!state) return;
+      fields.forEach(id => {
+        if (state[id] !== undefined && $(id)) $(id).value = state[id];
+      });
+      if (state.rates) {
+        rates = { ...rates, ...state.rates };
+        saveRates();
+        renderRates();
+      }
+      toggleModeUi();
+      syncKwHp('hp');
+      calculate();
+    }
+
+    function saveRates() {
+      localStorage.setItem(STORAGE_KEYS.rates, JSON.stringify(rates));
+    }
+
+    function loadRates() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.rates);
+        return raw ? { ...fallbackRates, ...JSON.parse(raw) } : { ...fallbackRates };
+      } catch {
+        return { ...fallbackRates };
+      }
+    }
+
+    function getScenarios() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEYS.scenarios) || '[]');
+      } catch {
+        return [];
+      }
+    }
+
+    function setScenarios(items) {
+      localStorage.setItem(STORAGE_KEYS.scenarios, JSON.stringify(items));
+    }
+
+    function renderScenarios() {
+      const list = $('savedList');
+      const items = getScenarios();
+      list.innerHTML = '';
+      if (!items.length) {
+        list.innerHTML = '<div class="muted tiny">Пока ничего не сохранено.</div>';
+        return;
+      }
+      items.slice().reverse().forEach(item => {
+        const box = document.createElement('div');
+        box.className = 'saved-item';
+        box.innerHTML = `
+          <div><b>${escapeHtml(item.name || 'Без названия')}</b></div>
+          <div class="tiny muted">${escapeHtml(item.state.carLabel || 'Без описания')} • ${escapeHtml(item.createdAt)}</div>
+          <div class="saved-actions">
+            <button class="secondary tiny" data-load-id="${item.id}">Загрузить</button>
+            <button class="secondary tiny" data-copy-id="${item.id}">Ссылка</button>
+            <button class="danger tiny" data-del-id="${item.id}">Удалить</button>
+          </div>
+        `;
+        list.appendChild(box);
+      });
+
+      list.querySelectorAll('[data-load-id]').forEach(btn => btn.onclick = () => {
+        const item = getScenarios().find(x => x.id === btn.dataset.loadId);
+        if (item) applyState(item.state);
+      });
+      list.querySelectorAll('[data-copy-id]').forEach(btn => btn.onclick = async () => {
+        const item = getScenarios().find(x => x.id === btn.dataset.copyId);
+        if (!item) return;
+        await copyText(buildShareUrl(item.state));
+        alert('Ссылка-снимок скопирована');
+      });
+      list.querySelectorAll('[data-del-id]').forEach(btn => btn.onclick = () => {
+        const items = getScenarios().filter(x => x.id !== btn.dataset.delId);
+        setScenarios(items);
+        renderScenarios();
+      });
+    }
+
+    function saveScenario() {
+      const items = getScenarios();
+      const state = collectState();
+      const name = $('scenarioName').value.trim() || $('carLabel').value.trim() || 'Расчёт без названия';
+      items.push({
+        id: cryptoId(),
+        name,
+        createdAt: new Date().toLocaleString('ru-RU'),
+        state
+      });
+      setScenarios(items.slice(-30));
+      renderScenarios();
+    }
+
+    function cryptoId() {
+      return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+    }
+
+    function escapeHtml(str='') {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function exportJson() {
+      const state = collectState();
+      const payload = { exportedAt: new Date().toISOString(), state, calc: calculate() };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'ussuriysk-auto-customs-calc.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function buildShareUrl(state = collectState()) {
+      const encoded = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(state)))));
+      return `${location.origin}${location.pathname}#calc=${encoded}`;
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      }
+    }
+
+    function applyHashState() {
+      const hash = location.hash || '';
+      const prefix = '#calc=';
+      if (!hash.startsWith(prefix)) return;
+      try {
+        const raw = decodeURIComponent(hash.slice(prefix.length));
+        const json = decodeURIComponent(escape(atob(raw)));
+        applyState(JSON.parse(json));
+      } catch (e) {
+        console.warn('Не удалось восстановить состояние из ссылки', e);
+      }
+    }
+
+    async function refreshRates() {
+      $('rateStatus').textContent = 'Источник: обновление...';
+      const endpoints = [
+        async () => {
+          const r = await fetch('https://open.er-api.com/v6/latest/RUB', { cache: 'no-store' });
+          const j = await r.json();
+          if (!j || !j.rates) throw new Error('ER-API failed');
+          return {
+            source: 'open.er-api.com',
+            date: j.time_last_update_utc || new Date().toISOString(),
+            RUB: 1,
+            USD: 1 / j.rates.USD,
+            EUR: 1 / j.rates.EUR,
+            CNY: 1 / j.rates.CNY,
+            JPY: 1 / j.rates.JPY,
+            KZT: 1 / j.rates.KZT,
+            KRW: 1 / j.rates.KRW,
+            BYN: 1 / j.rates.BYN,
+          };
+        },
+        async () => {
+          const r = await fetch('https://api.frankfurter.app/latest?from=RUB&to=USD,EUR,CNY,JPY,KZT,KRW,BYN', { cache: 'no-store' });
+          const j = await r.json();
+          if (!j || !j.rates) throw new Error('Frankfurter failed');
+          return {
+            source: 'frankfurter.app',
+            date: j.date || new Date().toISOString(),
+            RUB: 1,
+            USD: 1 / j.rates.USD,
+            EUR: 1 / j.rates.EUR,
+            CNY: 1 / j.rates.CNY,
+            JPY: 1 / j.rates.JPY,
+            KZT: 1 / j.rates.KZT,
+            KRW: 1 / j.rates.KRW,
+            BYN: 1 / j.rates.BYN,
+          };
+        },
+        async () => {
+          const r = await fetch('https://www.cbr-xml-daily.ru/daily_json.js', { cache: 'no-store' });
+          const j = await r.json();
+          if (!j || !j.Valute) throw new Error('CBR mirror failed');
+          const val = j.Valute;
+          return {
+            source: 'cbr-xml-daily.ru',
+            date: j.Date || new Date().toISOString(),
+            RUB: 1,
+            USD: val.USD.Value / val.USD.Nominal,
+            EUR: val.EUR.Value / val.EUR.Nominal,
+            CNY: val.CNY.Value / val.CNY.Nominal,
+            JPY: val.JPY.Value / val.JPY.Nominal,
+            KZT: val.KZT.Value / val.KZT.Nominal,
+            KRW: val.KRW.Value / val.KRW.Nominal,
+            BYN: val.BYN.Value / val.BYN.Nominal,
+          };
+        }
+      ];
+
+      for (const fn of endpoints) {
+        try {
+          const fresh = await fn();
+          rates = { ...rates, ...fresh };
+          saveRates();
+          renderRates();
+          calculate();
+          return;
+        } catch (err) {
+          console.warn(err);
+        }
+      }
+
+      $('rateStatus').textContent = 'Источник: не удалось обновить, оставлены локальные курсы';
+      renderRates();
+      calculate();
+    }
+
+    function setManualRates() {
+      saveRates();
+      alert('Текущие значения курсов сохранены в браузере.');
+    }
+
+    function attachEvents() {
+      fields.forEach(id => {
+        const el = $(id);
+        if (!el) return;
+        el.addEventListener('input', () => {
+          if (id === 'carYear') syncAgeFromYear();
+          if (id === 'powerHp') syncKwHp('hp');
+          if (id === 'powerKw') syncKwHp('kw');
+          if (id === 'calcMode') toggleModeUi();
+          calculate();
+        });
+        el.addEventListener('change', () => {
+          if (id === 'calcMode') toggleModeUi();
+          calculate();
+        });
+      });
+
+      $('btnRecalc').onclick = calculate;
+      $('btnRecalcTop').onclick = calculate;
+      $('btnPrintTop').onclick = () => window.print();
+      $('btnRefreshRates').onclick = refreshRates;
+      $('btnRefreshRatesTop').onclick = refreshRates;
+      $('btnSetManualRates').onclick = setManualRates;
+      $('btnSaveScenario').onclick = saveScenario;
+      $('btnExportJson').onclick = exportJson;
+      $('btnShare').onclick = async () => {
+        await copyText(buildShareUrl());
+        alert('Ссылка-снимок скопирована');
+      };
+
+      document.querySelectorAll('[data-duty-preset]').forEach(btn => btn.onclick = () => {
+        const p = btn.dataset.dutyPreset;
+        $('dutyUseMinCc').value = 'no';
+        $('dutyMinEurPerCc').value = 0;
+        if (p === 'ev15') $('dutyPercent').value = 15;
+        if (p === 'ice15') $('dutyPercent').value = 15;
+        calculate();
+      });
+
+      document.querySelectorAll('[data-util-preset]').forEach(btn => btn.onclick = () => {
+        $('utilMode').value = 'fixedAmount';
+        $('utilFixed').value = btn.dataset.utilPreset;
+        calculate();
+      });
+    }
+
+    renderRates();
+    attachEvents();
+    renderScenarios();
+    applyHashState();
+    toggleModeUi();
+    syncAgeFromYear();
+    syncKwHp('hp');
+    calculate();
+    setTimeout(refreshRates, 400);
+  </script>
+</body>
+</html>
