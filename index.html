@@ -1,9 +1,10 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AutoChinaZakaz — калькулятор растаможки авто в Уссурийске</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
       --bg: #0b1220;
@@ -187,7 +188,7 @@
           <label>Марка авто
             <select id="carBrand"></select>
           </label>
-          <label>Модель авто
+          <label>Model авто
             <select id="carModel"></select>
           </label>
           <label id="carNameWrap" class="hidden">Своя марка/модель
@@ -393,7 +394,7 @@
               <div class="muted">Готовый текст заявки</div>
               <textarea id="leadPreview" readonly style="margin-top:10px; min-height: 210px;"></textarea>
               <div class="btn-row no-print" style="margin-top:12px">
-                <button id="buildLeadBtn">Сформировать</button>
+                <button id="buildLeadBtn">Отправить расчёт в чат</button>
                 <button class="secondary" id="copyLeadBtn">Скопировать</button>
               </div>
             </div>
@@ -487,7 +488,6 @@
     const DEFAULT_RATES = { RUB: 1, CNY: 13.5, USD: 98.0, EUR: 108.2, JPY: 0.61, KZT: 0.19, KRW: 0.068, BYN: 28.5 };
     const STORAGE_KEYS = { rates: 'acz_rates_v4', draft: 'acz_draft_v4', saves: 'acz_saves_v4' };
     
-    // ВАЖНО: Все поля, которые нужно сохранять
     const FIELD_IDS = [
       'carBrand', 'carModel', 'carName', 'purchasePrice','purchaseCurrency','purchaseCountry','releaseYear','releaseMonth',
       'importMethod','engineCc','powerIceHp','powerEm1','powerEm2','powerEm3','powerEm4','emCount','powertrainType',
@@ -503,7 +503,6 @@
       $('releaseMonth').value = '1';
     }
 
-    // Инициализация списков автомобилей
     function initCarSelects() {
       const brandSel = $('carBrand');
       const modelSel = $('carModel');
@@ -684,10 +683,9 @@
       return 1900;
     }
 
-    // МАТРИЦА УТИЛЬСБОРА (Коммерция / Мощность)
     function getUtilMatrixCoeff(cc, hp, ageYears) {
         const isNew = ageYears < 3;
-        const effCc = cc === 0 ? 1500 : cc; // Электро приравниваем к 1-2Л
+        const effCc = cc === 0 ? 1500 : cc;
         
         if (effCc <= 1000) {
             if (hp <= 160) return isNew ? 0.17 : 0.26;
@@ -732,8 +730,6 @@
     function utilEstimate(method, pt, ageYears, cc, hp) {
       const personal = method === 'personal';
       const base = 20000;
-      
-      // Льгота: Физлицо + мощность до 160 л.с. + ДВС до 3л (либо электро)
       const isLgota = personal && hp <= 160 && cc <= 3000;
 
       if (isLgota) {
@@ -745,9 +741,8 @@
         };
       }
 
-      // Коммерческий расчет (или если больше 160 л.с.)
       let coeff = getUtilMatrixCoeff(cc, hp, ageYears);
-      coeff = coeff * 1.10; // Индексация 2026 года (+10%)
+      coeff = coeff * 1.10;
 
       return {
         amount: base * coeff,
@@ -933,7 +928,7 @@
       const exciseRub = exciseApplicable ? exciseRateRub * hp : 0;
       
       const vatApplicable = (method !== 'personal' || isElectricLike(pt));
-      const vatRate = vatApplicable ? 20 : 0; // На 2026 год НДС 20%
+      const vatRate = vatApplicable ? 20 : 0;
       const vatBase = priceRub + duty.amount + exciseRub;
       const vatRub = vatApplicable ? vatBase * vatRate / 100 : 0;
       
@@ -1027,7 +1022,7 @@
       $('saveRates').onclick = () => { state.rateDate = nowStamp(); saveRatesToStorage('ручные значения'); renderRates(); };
       $('saveScenarioBtn').onclick = saveScenario;
       $('saveTop').onclick = saveScenario;
-      $('buildLeadBtn').onclick = buildLeadPreview;
+      $('buildLeadBtn').onclick = sendDataToBot; // ИЗМЕНЕНО: привязка к Mini App
       $('copyLeadBtn').onclick = copyLeadPreview;
     }
 
@@ -1037,7 +1032,24 @@
       renderRates();
       const now = new Date();
       $('releaseMonth').value = String(Math.max(1, now.getMonth()));
-      initCarSelects(); // ВАЖНО: инициализируем списки ДО расчета
+      initCarSelects();
+    }
+
+    // --- МОСТ ДЛЯ TELEGRAM MINI APP ---
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    async function sendDataToBot() {
+      const dataToSend = {
+        car_name: $('carName').value,
+        total_price: $('totalRub').textContent,
+        details: {
+          price: $('kpiPrice').textContent,
+          taxes: $('kpiTaxes').textContent,
+          method: methodLabel()
+        }
+      };
+      tg.sendData(JSON.stringify(dataToSend));
     }
 
     initDefaults();
