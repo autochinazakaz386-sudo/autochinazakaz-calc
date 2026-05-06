@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AutoChinaZakaz — Калькулятор (Обновлен под сетку 2026)</title>
+  <title>AutoChinaZakaz — Калькулятор</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
@@ -55,8 +55,24 @@
     .title-row { display:flex; justify-content:space-between; margin-bottom:14px; }
     h2 { margin: 0; font-size: 22px; }
     label { display: grid; gap: 8px; font-size: 13px; color: #d9e3f5; }
+    
+    /* ИСПРАВЛЕНИЕ ДЛЯ TELEGRAM DESKTOP */
     input, select, textarea, button { font: inherit; border-radius: 14px; border: 1px solid var(--line); outline: none; }
     input, select, textarea { width: 100%; padding: 13px 14px; background: rgba(7, 12, 22, .76); color: var(--text); }
+    
+    select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg stroke='%23a9b5cc' fill='none' stroke-width='2' viewBox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+    select option { background: #0b1220; color: #f8fafc; }
+    /* КОНЕЦ ИСПРАВЛЕНИЯ */
+
     textarea { min-height: 96px; resize: vertical; }
     input[readonly] { background: rgba(255,255,255,.05); }
     button {
@@ -95,7 +111,7 @@
           <div class="brand-mark">ACZ</div>
           <div>
             <h1>AutoChinaZakaz</h1>
-            <div class="brand-sub">Точный алгоритм TKS. Полная сетка утильсбора РФ (с 1 января 2026 года по л.с. и объему).</div>
+            <div class="brand-sub">Точный алгоритм TKS. Полная сетка утильсбора РФ (с 1 января 2026 года).</div>
           </div>
         </div>
       </div>
@@ -285,7 +301,7 @@
           state.rates.USD = usdRub;
           renderRates(); calculate();
         }
-      } catch (e) { alert("Ошибка обновления курсов"); }
+      } catch (e) {}
     }
 
     function getAge() {
@@ -294,7 +310,6 @@
       return ageM / 12;
     }
 
-    // ТАМОЖЕННОЕ ОФОРМЛЕНИЕ
     function calcCustomsFee(rub) {
       if (rub <= 200000) return 775;
       if (rub <= 450000) return 1550;
@@ -309,7 +324,6 @@
       return 30000;
     }
 
-    // ПОШЛИНА ФИЗЛИЦО (ЕТС)
     function calcPersonalDuty(eurValue, cc, age) {
       if (age < 3) {
         let rate = 0.48, minCc = 20;
@@ -331,12 +345,9 @@
       return cc * r;
     }
 
-    // ТАБЛИЦА КОЭФФИЦИЕНТОВ УТИЛЬСБОРА НА 2026 ГОД 
     function getUtilMatrixCoeff(method, pt, cc, hp, ageYears) {
         const isNew = ageYears < 3;
         const isPersonal = method === 'personal';
-        
-        // EV и последовательные гибриды
         if (pt === 'electric' || pt === 'seriesHybrid') {
             if (hp <= 80) return isPersonal ? (isNew ? 0.17 : 0.26) : (isNew ? 40.04 : 70.44);
             if (hp <= 100) return isNew ? 49.56 : 82.08;
@@ -348,8 +359,6 @@
             if (hp <= 280) return isNew ? 153.96 : 205.20;
             return isNew ? 182.40 : 239.04;
         }
-
-        // ДВС и Параллельные гибриды <= 2000 cc
         if (cc <= 2000) {
             if (hp <= 160) return isPersonal ? (isNew ? 0.17 : 0.26) : (isNew ? 40.04 : 70.44);
             if (hp <= 190) return isNew ? 45.00 : 74.64;
@@ -365,8 +374,6 @@
             if (hp <= 500) return isNew ? 140.40 : 173.40;
             return isNew ? 160.08 : 189.84;
         }
-
-        // ДВС 2000 - 3000 cc
         if (cc <= 3000) {
             if (hp <= 160) return isPersonal ? (isNew ? 0.17 : 0.26) : (isNew ? 112.52 : 170.36);
             if (hp <= 190) return isNew ? 115.34 : 172.80;
@@ -382,8 +389,6 @@
             if (hp <= 500) return isNew ? 165.84 : 222.36;
             return isNew ? 172.44 : 228.60;
         }
-
-        // ДВС 3000 - 3500 cc (Всегда коммерческий)
         if (cc <= 3500) {
             if (hp <= 160) return isNew ? 129.20 : 197.81;
             if (hp <= 190) return isNew ? 131.76 : 200.04;
@@ -399,8 +404,6 @@
             if (hp <= 500) return isNew ? 198.60 : 252.48;
             return isNew ? 209.52 : 260.04;
         }
-
-        // ДВС > 3500 cc (Всегда коммерческий)
         if (hp <= 160) return isNew ? 164.53 : 216.29;
         if (hp <= 190) return isNew ? 167.28 : 219.48;
         if (hp <= 220) return isNew ? 170.16 : 222.84;
@@ -449,7 +452,6 @@
         vatRub = (customsValueRub + dutyRub + exciseRub) * 0.20;
       }
 
-      // Подключаем новую матрицу утильсбора
       const coeff = getUtilMatrixCoeff(method, pt, cc, hp, age);
       const utilRub = 20000 * coeff;
       
@@ -484,36 +486,34 @@
       $('breakdownBody').innerHTML = rows.filter(r=>r[1]>0).map(r=>`<tr><td>${r[0]}</td><td class="mono">${fmt(r[1])}</td></tr>`).join('');
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      try { if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.expand(); } catch(e){}
-      
-      initSelects();
-      renderRates();
-      calculate();
+    // ВАЖНО: Запускаем скрипты сразу, не дожидаясь DOMContentLoaded, чтобы Telegram не блокировал отрисовку
+    try { if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.expand(); } catch(e){}
+    initSelects();
+    renderRates();
+    calculate();
 
-      ['purchasePrice','releaseYear','engineCc','powerIceHp','toBorderRub','bankManualPercent','deliveryRub','agentRub'].forEach(id => {
-        $(id).addEventListener('input', calculate);
-      });
-      ['purchaseCurrency','importMethod','powertrainType'].forEach(id => {
-        $(id).addEventListener('change', calculate);
-      });
-      $('recalcBtn').onclick = calculate;
-      $('refreshRates').onclick = refreshRates;
-
-      $('buildLeadBtn').onclick = () => {
-        const data = {
-          car_name: $('carName').value,
-          total_price: $('totalRub').textContent,
-          client_name: $('leadName').value,
-          client_phone: $('leadContact').value
-        };
-        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.sendData) {
-            window.Telegram.WebApp.sendData(JSON.stringify(data));
-        } else {
-            alert("Telegram WebApp не обнаружен. Расчет: " + JSON.stringify(data));
-        }
-      };
+    ['purchasePrice','releaseYear','engineCc','powerIceHp','toBorderRub','bankManualPercent','deliveryRub','agentRub'].forEach(id => {
+      $(id).addEventListener('input', calculate);
     });
+    ['purchaseCurrency','importMethod','powertrainType'].forEach(id => {
+      $(id).addEventListener('change', calculate);
+    });
+    $('recalcBtn').onclick = calculate;
+    $('refreshRates').onclick = refreshRates;
+
+    $('buildLeadBtn').onclick = () => {
+      const data = {
+        car_name: $('carName').value,
+        total_price: $('totalRub').textContent,
+        client_name: $('leadName').value,
+        client_phone: $('leadContact').value
+      };
+      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.sendData) {
+          window.Telegram.WebApp.sendData(JSON.stringify(data));
+      } else {
+          alert("Telegram WebApp не обнаружен. Расчет: " + JSON.stringify(data));
+      }
+    };
   </script>
 </body>
 </html>
