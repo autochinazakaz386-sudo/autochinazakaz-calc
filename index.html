@@ -3,145 +3,278 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AutoChinaZakaz</title>
-  <!-- 1. Официальный скрипт строго в head -->
+  <title>AutoChinaZakaz — Full TKS 2026</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: #0b1220; --text: #f8fafc; --muted: #a9b5cc;
-      --gold: #f59e0b; --line: rgba(255,255,255,.10);
+      --bg: #0b1220; --bg2: #111827;
+      --line: rgba(255,255,255,.10);
+      --text: #f8fafc; --muted: #a9b5cc;
+      --gold: #f59e0b; --radius: 18px;
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
       margin: 0; font-family: -apple-system, system-ui, sans-serif;
-      background: #09101b; color: var(--text); padding: 15px;
+      background: #09101b; color: var(--text); padding: 10px;
+      line-height: 1.4;
     }
     .card {
       background: #111827; border: 1px solid var(--line);
-      border-radius: 20px; padding: 15px; margin-bottom: 15px;
+      border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
     }
-    label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--muted); }
+    h2 { margin: 0 0 15px 0; font-size: 18px; color: var(--gold); border-left: 3px solid var(--gold); padding-left: 10px; }
+    label { display: block; margin-bottom: 6px; font-size: 12px; color: var(--muted); }
     
-    /* Стили для выпадающих списков, чтобы они работали в Telegram Desktop */
-    select, input {
+    input, select, textarea {
       width: 100%; padding: 12px; border-radius: 12px;
       border: 1px solid var(--line); background: #070c16;
-      color: #fff; font-size: 16px; margin-bottom: 15px;
+      color: #fff; font-size: 15px; margin-bottom: 12px;
       appearance: none; -webkit-appearance: none;
     }
     select {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23f59e0b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;
+      background-repeat: no-repeat; background-position: right 12px center; background-size: 14px;
     }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .btn {
-      width: 100%; padding: 15px; border-radius: 12px; border: none;
+      width: 100%; padding: 16px; border-radius: 12px; border: none;
       background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
       color: #fff; font-weight: bold; font-size: 16px; cursor: pointer;
     }
-    .res-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); }
-    .total { font-size: 24px; font-weight: 900; color: var(--gold); text-align: center; margin: 20px 0; }
+    .total-box { text-align: center; background: rgba(245, 158, 11, 0.05); border: 1px dashed var(--gold); padding: 20px; border-radius: 15px; }
+    .total-price { font-size: 32px; font-weight: 900; color: var(--gold); margin: 5px 0; }
+    .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+    .row span:last-child { font-weight: bold; }
+    .chip { display: inline-block; padding: 4px 8px; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 11px; margin-bottom: 10px; }
     .hidden { display: none; }
   </style>
 </head>
 <body>
 
   <div class="card">
-    <h2 style="margin-top:0">Расчет авто</h2>
+    <h2>1. Параметры авто</h2>
+    <div class="grid">
+      <div>
+        <label>Марка</label>
+        <select id="carBrand"></select>
+      </div>
+      <div>
+        <label>Модель</label>
+        <select id="carModel"></select>
+      </div>
+    </div>
     
-    <label>Марка автомобиля</label>
-    <select id="carBrand"></select>
+    <div id="manualNameBox" class="hidden">
+      <label>Название авто (вручную)</label>
+      <input type="text" id="manualCarName" placeholder="Марка Модель">
+    </div>
 
-    <label>Модель</label>
-    <select id="carModel"></select>
+    <div class="grid">
+      <div>
+        <label>Год выпуска</label>
+        <input type="number" id="releaseYear" value="2023">
+      </div>
+      <div>
+        <label>Месяц</label>
+        <select id="releaseMonth"></select>
+      </div>
+    </div>
 
-    <label>Месяц выпуска</label>
-    <select id="releaseMonth"></select>
-
-    <label>Год выпуска</label>
-    <input type="number" id="releaseYear" value="2023">
-
-    <label>Цена (в валюте)</label>
-    <input type="number" id="purchasePrice" value="150000">
-
-    <label>Валюта</label>
-    <select id="purchaseCurrency">
-      <option value="CNY">Юань (CNY)</option>
-      <option value="USD">Доллар (USD)</option>
-      <option value="EUR">Евро (EUR)</option>
+    <label>Тип двигателя</label>
+    <select id="powertrainType">
+      <option value="gasoline">Бензин</option>
+      <option value="diesel">Дизель</option>
+      <option value="electric">Электро (BEV)</option>
+      <option value="seriesHybrid">Последовательный гибрид</option>
     </select>
+
+    <div class="grid">
+      <div>
+        <label>Объем, см³</label>
+        <input type="number" id="engineCc" value="1998">
+      </div>
+      <div>
+        <label>Мощность, л.с.</label>
+        <input type="number" id="powerHp" value="190">
+      </div>
+    </div>
   </div>
 
   <div class="card">
-    <div class="total" id="totalRub">0 ₽</div>
+    <h2>2. Цена и ввоз</h2>
+    <div class="grid">
+      <div>
+        <label>Цена авто</label>
+        <input type="number" id="purchasePrice" value="150000">
+      </div>
+      <div>
+        <label>Валюта</label>
+        <select id="purchaseCurrency">
+          <option value="CNY">Юань (CNY)</option>
+          <option value="USD">Доллар (USD)</option>
+          <option value="EUR">Евро (EUR)</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Цель ввоза</label>
+    <select id="importMethod">
+      <option value="personal">Личное пользование (ФЛ)</option>
+      <option value="commercial">Коммерция / Юр. лицо</option>
+    </select>
+  </div>
+
+  <div class="card total-box">
+    <div class="chip" id="ageInfo">Возраст: расчет...</div>
+    <div class="muted" style="font-size: 12px;">Итого под ключ в РФ:</div>
+    <div class="total-price" id="totalRub">0 ₽</div>
+    <div id="utilNote" style="font-size: 11px; color: var(--muted); margin-bottom: 15px;"></div>
+    
     <div id="breakdown"></div>
-    <button class="btn" id="sendData">Отправить расчет менеджеру</button>
+    
+    <button class="btn" id="sendData" style="margin-top: 15px;">Заказать этот автомобиль</button>
   </div>
 
   <script>
     const carDatabase = {
-      "Geely": ["Monjaro", "Tugella", "Coolray"],
-      "Changan": ["UNI-K", "UNI-V", "CS55 Plus"],
-      "Li Auto": ["L7", "L8", "L9"],
-      "Zeekr": ["001", "007", "X"],
-      "BYD": ["Song Plus", "Han", "Tang"]
+      "Geely": ["Monjaro", "Tugella", "Coolray", "Preface", "Atlas"],
+      "Changan": ["UNI-K", "UNI-V", "UNI-T", "CS55 Plus", "Hunter"],
+      "Li Auto": ["L6", "L7", "L8", "L9", "Mega"],
+      "Zeekr": ["001", "007", "009", "X"],
+      "BYD": ["Song Plus", "Han", "Tang", "Seal", "Qin"],
+      "Voyah": ["Free", "Dream", "Passion"],
+      "Xiaomi": ["SU7"],
+      "Другая марка...": ["Ввести вручную..."]
     };
 
     const state = { rates: { CNY: 13.5, USD: 98, EUR: 108 } };
     const tg = window.Telegram.WebApp;
 
-    // Функция инициализации списков
-    function initApp() {
-      try {
-        const brandSel = document.getElementById('carBrand');
-        const monthSel = document.getElementById('releaseMonth');
-        const modelSel = document.getElementById('carModel');
+    function init() {
+      const brandSel = document.getElementById('carBrand');
+      const monthSel = document.getElementById('releaseMonth');
+      const modelSel = document.getElementById('carModel');
 
-        // Заполняем марки
-        brandSel.innerHTML = Object.keys(carDatabase).map(b => `<option value="${b}">${b}</option>`).join('');
-        
-        // Заполняем месяцы
-        const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-        monthSel.innerHTML = months.map((m, i) => `<option value="${i+1}">${m}</option>`).join('');
+      brandSel.innerHTML = Object.keys(carDatabase).map(b => `<option value="${b}">${b}</option>`).join('');
+      const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+      monthSel.innerHTML = months.map((m, i) => `<option value="${i+1}">${m}</option>`).join('');
 
-        const updateModels = () => {
-          const brand = brandSel.value;
+      const updateModels = () => {
+        const brand = brandSel.value;
+        const manualBox = document.getElementById('manualNameBox');
+        if (brand === "Другая марка...") {
+          manualBox.classList.remove('hidden');
+          modelSel.classList.add('hidden');
+        } else {
+          manualBox.classList.add('hidden');
+          modelSel.classList.remove('hidden');
           modelSel.innerHTML = carDatabase[brand].map(m => `<option value="${m}">${m}</option>`).join('');
-          calculate();
-        };
+        }
+        calculate();
+      };
 
-        brandSel.addEventListener('change', updateModels);
-        modelSel.addEventListener('change', calculate);
-        document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', calculate));
+      brandSel.addEventListener('change', updateModels);
+      document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', calculate));
+      
+      updateModels();
+      tg.expand();
+    }
 
-        updateModels();
-        tg.expand();
-        tg.ready();
-      } catch (e) {
-        alert("Ошибка инициализации: " + e);
+    // ТАБЛИЦА УТИЛЬСБОРА 2026 (ЛОГИКА ИЗ PDF)
+    function getUtilFee(method, pt, cc, hp, age) {
+      const isNew = age < 3;
+      const isPersonal = method === 'personal';
+      const base = 20000;
+
+      // Льготный утиль (только ФЛ + ДВС до 3.0 + до 160 л.с. ИЛИ Электро до 80 л.с.)
+      const canHaveLgota = isPersonal && cc <= 3000 && 
+                           ((pt === 'electric' || pt === 'seriesHybrid' ? hp <= 80 : hp <= 160));
+
+      if (canHaveLgota) {
+        return { amount: isNew ? 3400 : 5200, note: "Льготный (ФЛ)" };
       }
+
+      // КОММЕРЧЕСКАЯ СЕТКА (при превышении л.с. или объема)[cite: 3]
+      let k = 0;
+      if (pt === 'electric' || pt === 'seriesHybrid') {
+        if (hp <= 80) k = isNew ? 40.04 : 70.44;
+        else if (hp <= 130) k = isNew ? 65.88 : 95.64;
+        else k = isNew ? 182.40 : 239.04;
+      } else {
+        if (cc <= 2000) {
+          k = isNew ? 45.00 : 74.64; // Средний коэф для 1-2л[cite: 3]
+        } else if (cc <= 3000) {
+          k = isNew ? 115.34 : 172.80; // Коэф для 2-3л[cite: 3]
+        } else {
+          k = isNew ? 229.08 : 344.28; // Коэф свыше 3.5л[cite: 3]
+        }
+      }
+      return { amount: base * k, note: `Коммерческий (К=${k})` };
+    }
+
+    // ПОШЛИНА (ЕТС - ТКС)
+    function getDuty(priceEur, cc, age) {
+      if (age < 3) {
+        let pct = 0.48, minEur = 3.5;
+        if (priceEur <= 8500) { pct = 0.54; minEur = 2.5; }
+        return Math.max(priceEur * pct, cc * minEur) * state.rates.EUR;
+      }
+      const r = age <= 5 ? (cc <= 1500 ? 1.7 : cc <= 3000 ? 3.0 : 3.6) : (cc <= 1500 ? 3.2 : cc <= 3000 ? 5.0 : 5.7);
+      return cc * r * state.rates.EUR;
     }
 
     function calculate() {
       const price = parseFloat(document.getElementById('purchasePrice').value) || 0;
       const cur = document.getElementById('purchaseCurrency').value;
-      const rate = state.rates[cur] || 1;
+      const cc = parseFloat(document.getElementById('engineCc').value) || 0;
+      const hp = parseFloat(document.getElementById('powerHp').value) || 0;
+      const method = document.getElementById('importMethod').value;
+      const pt = document.getElementById('powertrainType').value;
       
-      const total = price * rate + 150000; // Упрощенная формула для теста
+      const year = parseInt(document.getElementById('releaseYear').value);
+      const age = new Date().getFullYear() - year;
+      document.getElementById('ageInfo').innerText = `Возраст: ~${age} л.`;
+
+      const priceRub = price * (state.rates[cur] || 1);
+      const priceEur = priceRub / state.rates.EUR;
+
+      // Таможня
+      const duty = getDuty(priceEur, cc, age);
+      const util = getUtilFee(method, pt, cc, hp, age);
+      const fee = 3100; // Таможенное оформление (среднее)
+      
+      // Доп. расходы (логистика, СБКТС, брокер, комиссия ACZ)
+      const service = 120000; // Комиссия ACZ
+      const delivery = 150000; // Логистика
+      
+      const total = priceRub + duty + util.amount + fee + service + delivery;
+
       document.getElementById('totalRub').innerText = Math.round(total).toLocaleString() + ' ₽';
+      document.getElementById('utilNote').innerText = `Утилизационный сбор: ${util.note}`;
+
+      const fmt = (v) => Math.round(v).toLocaleString() + ' ₽';
+      document.getElementById('breakdown').innerHTML = `
+        <div class="row"><span>Цена в Китае</span><span>${fmt(priceRub)}</span></div>
+        <div class="row"><span>Пошлина (таможня)</span><span>${fmt(duty)}</span></div>
+        <div class="row"><span>Утильсбор</span><span>${fmt(util.amount)}</span></div>
+        <div class="row"><span>Доставка и ACZ</span><span>${fmt(service + delivery)}</span></div>
+      `;
     }
 
     document.getElementById('sendData').onclick = function() {
-      const data = {
-        car: document.getElementById('carBrand').value + ' ' + document.getElementById('carModel').value,
-        total: document.getElementById('totalRub').innerText
+      const car = document.getElementById('carBrand').value === "Другая марка..." 
+                  ? document.getElementById('manualCarName').value 
+                  : document.getElementById('carBrand').value + ' ' + document.getElementById('carModel').value;
+      
+      const res = {
+        car: car,
+        price: document.getElementById('totalRub').innerText,
+        method: document.getElementById('importMethod').value === 'personal' ? 'Личное (ФЛ)' : 'Коммерция'
       };
-      tg.sendData(JSON.stringify(data));
+      tg.sendData(JSON.stringify(res));
     };
 
-    // ЗАПУСК: пробуем трижды, чтобы точно сработало в Telegram
-    initApp();
-    window.onload = initApp;
-    document.addEventListener('DOMContentLoaded', initApp);
+    init();
   </script>
 </body>
 </html>
