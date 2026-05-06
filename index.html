@@ -3,37 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AutoChinaZakaz — калькулятор растаможки авто в Уссурийске</title>
+  <title>AutoChinaZakaz — Калькулятор (Обновлен под сетку 2026)</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: #0b1220;
-      --bg2: #111827;
-      --panel: rgba(15, 23, 42, 0.96);
-      --panel2: rgba(20, 31, 57, 0.98);
+      --bg: #0b1220; --bg2: #111827;
       --line: rgba(255,255,255,.10);
-      --line-strong: rgba(245, 158, 11, .28);
-      --text: #f8fafc;
-      --muted: #a9b5cc;
-      --gold: #f59e0b;
-      --gold-2: #fbbf24;
-      --red: #e11d48;
-      --red-2: #fb7185;
-      --green: #22c55e;
-      --blue: #60a5fa;
-      --shadow: 0 18px 48px rgba(0,0,0,.28);
+      --text: #f8fafc; --muted: #a9b5cc;
+      --gold: #f59e0b; --red: #e11d48;
+      --red-2: #fb7185; --green: #22c55e;
+      --blue: #60a5fa; --shadow: 0 18px 48px rgba(0,0,0,.28);
       --radius: 22px;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
-      margin: 0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      margin: 0; font-family: Inter, system-ui, sans-serif;
       color: var(--text);
-      background:
-        radial-gradient(1100px 600px at 0% -10%, rgba(225,29,72,.20), transparent 45%),
-        radial-gradient(900px 600px at 100% 0%, rgba(245,158,11,.16), transparent 42%),
-        linear-gradient(180deg, #09101b 0%, #0d1524 100%);
+      background: linear-gradient(180deg, #09101b 0%, #0d1524 100%);
     }
     .wrap { max-width: 1460px; margin: 0 auto; padding: 18px; }
     .topbar, .hero, .layout, .grid { display: grid; gap: 18px; }
@@ -45,102 +32,59 @@
     .grid.four { grid-template-columns: repeat(4, minmax(0,1fr)); }
     .card {
       background: linear-gradient(180deg, rgba(16,24,43,.98) 0%, rgba(11,18,32,.96) 100%);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px;
-      overflow: hidden;
+      border: 1px solid var(--line); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 18px; overflow: hidden;
     }
-    .card.soft {
-      background: linear-gradient(180deg, rgba(20,31,57,.98) 0%, rgba(12,18,32,.98) 100%);
-    }
+    .card.soft { background: linear-gradient(180deg, rgba(20,31,57,.98) 0%, rgba(12,18,32,.98) 100%); }
     .brand { display: flex; align-items: center; gap: 14px; }
     .brand-mark {
       width: 56px; height: 56px; border-radius: 16px;
-      display: grid; place-items: center; font-weight: 900; letter-spacing: .06em;
+      display: grid; place-items: center; font-weight: 900;
       background: linear-gradient(135deg, rgba(225,29,72,.95), rgba(245,158,11,.95));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 14px 32px rgba(225,29,72,.22);
+      box-shadow: 0 14px 32px rgba(225,29,72,.22);
     }
-    .brand h1 { margin: 0; font-size: clamp(26px, 4vw, 40px); line-height: 1.05; }
-    .brand-sub { color: var(--muted); line-height: 1.55; margin-top: 8px; max-width: 900px; }
-    .badge-row, .btn-row, .chip-row { display: flex; flex-wrap: wrap; gap: 10px; }
-    .badge, .chip {
-      display: inline-flex; align-items: center; gap: 8px;
+    .brand h1 { margin: 0; font-size: clamp(26px, 4vw, 40px); }
+    .brand-sub { color: var(--muted); margin-top: 8px; }
+    .chip-row, .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip {
       padding: 8px 12px; border-radius: 999px; font-size: 13px;
-      border: 1px solid rgba(251,191,36,.18);
-      background: rgba(251,191,36,.08); color: #fff0cc;
+      border: 1px solid rgba(251,191,36,.18); background: rgba(251,191,36,.08); color: #fff0cc;
     }
     .chip.blue { border-color: rgba(96,165,250,.18); background: rgba(96,165,250,.08); color: #dbeafe; }
     .chip.green { border-color: rgba(34,197,94,.18); background: rgba(34,197,94,.08); color: #dcfce7; }
-    .chip.red { border-color: rgba(251,113,133,.18); background: rgba(251,113,133,.08); color: #ffe4e6; }
-    .title-row { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; margin-bottom:14px; }
+    .title-row { display:flex; justify-content:space-between; margin-bottom:14px; }
     h2 { margin: 0; font-size: 22px; }
-    .muted, .hint { color: var(--muted); }
-    .hint { line-height: 1.5; }
     label { display: grid; gap: 8px; font-size: 13px; color: #d9e3f5; }
-    input, select, textarea, button {
-      font: inherit; border-radius: 14px; border: 1px solid var(--line); outline: none;
-    }
-    input, select, textarea {
-      width: 100%; padding: 13px 14px; background: rgba(7, 12, 22, .76); color: var(--text);
-      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
-    }
+    input, select, textarea, button { font: inherit; border-radius: 14px; border: 1px solid var(--line); outline: none; }
+    input, select, textarea { width: 100%; padding: 13px 14px; background: rgba(7, 12, 22, .76); color: var(--text); }
     textarea { min-height: 96px; resize: vertical; }
-    input:focus, select:focus, textarea:focus {
-      border-color: rgba(251,191,36,.55); box-shadow: 0 0 0 4px rgba(251,191,36,.12);
-    }
-    input[readonly], input[disabled] { background: rgba(255,255,255,.05); color: #f3f5fb; }
+    input[readonly] { background: rgba(255,255,255,.05); }
     button {
       cursor: pointer; color: white; padding: 12px 16px;
       background: linear-gradient(180deg, #ef4444 0%, #be123c 100%);
-      border: 1px solid rgba(255,255,255,.08); box-shadow: 0 12px 24px rgba(190,18,60,.24);
     }
-    button:hover { filter: brightness(1.04); }
-    button.secondary { background: rgba(255,255,255,.04); box-shadow: none; color: var(--text); }
-    button.gold { background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%); box-shadow: 0 12px 24px rgba(217,119,6,.24); color: #fff; }
-    button.small { padding: 9px 12px; font-size: 13px; }
+    button.secondary { background: rgba(255,255,255,.04); color: var(--text); }
+    button.gold { background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%); }
     .summary { position: sticky; top: 14px; display: grid; gap: 18px; }
-    .summary-value { font-size: clamp(34px, 4vw, 48px); font-weight: 900; line-height: 1; margin: 10px 0 2px; }
+    .summary-value { font-size: clamp(34px, 4vw, 48px); font-weight: 900; margin: 10px 0 2px; }
     .mono { font-variant-numeric: tabular-nums; }
     .kpis { display: grid; gap: 10px; margin-top: 14px; }
-    .kpi { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 12px 14px; border-radius: 15px; border: 1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.035); }
+    .kpi { display: flex; justify-content: space-between; padding: 12px 14px; border-radius: 15px; background: rgba(255,255,255,.035); }
     .kpi .name { color: var(--muted); }
     .kpi .value { font-weight: 800; }
     .rate-grid { display:grid; gap:12px; grid-template-columns: repeat(4, minmax(0,1fr)); }
-    .rate-box { padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.03); }
+    .rate-box { padding: 12px; border-radius: 16px; background: rgba(255,255,255,.03); }
     .rate-code { font-size: 12px; color: var(--muted); margin-bottom: 7px; }
-    .rate-box input { padding: 11px 12px; }
-    .note { padding: 14px 16px; border-radius: 16px; line-height: 1.55; font-size: 13px; border-left: 4px solid var(--gold); background: rgba(245,158,11,.08); color: #ffefcc; }
-    .note.ok { border-left-color: var(--green); background: rgba(34,197,94,.08); color: #d7ffe7; }
-    .note.red { border-left-color: var(--red-2); background: rgba(225,29,72,.08); color: #ffe4eb; }
-    table { width: 100%; border-collapse: collapse; overflow: hidden; border: 1px solid rgba(255,255,255,.08); border-radius: 16px; }
+    table { width: 100%; border-collapse: collapse; border-radius: 16px; }
     th, td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,.07); font-size: 14px; }
-    th { text-align: left; color: var(--muted); background: rgba(255,255,255,.03); }
+    th { text-align: left; color: var(--muted); }
     td:last-child { text-align: right; }
-    tr:last-child td { border-bottom: none; }
     .total-row td { font-weight: 900; font-size: 16px; }
-    .list { display:grid; gap:10px; }
-    .saved-item { border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.03); border-radius: 16px; padding: 12px; display: grid; gap: 10px; }
-    .saved-head { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
-    .saved-title { font-weight: 800; }
-    .saved-meta { color: var(--muted); font-size: 12px; }
-    .saved-actions { display:flex; gap:8px; flex-wrap:wrap; }
-    .form-grid { display:grid; gap:14px; grid-template-columns: 1.15fr .85fr; }
-    .hero-stat { display:grid; gap:10px; align-content:start; }
-    .hero-price { font-size: clamp(28px, 3.5vw, 40px); font-weight: 900; line-height: 1; margin-top: 6px; }
-    .footer { color: var(--muted); text-align:center; padding: 14px 0 28px; font-size: 12px; }
     .hidden { display: none !important; }
-    .divider { height: 1px; background: rgba(255,255,255,.08); margin: 16px 0; }
-    @media (max-width: 1180px) { .topbar, .hero, .layout, .form-grid { grid-template-columns: 1fr; } .summary { position: static; } .rate-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
-    @media (max-width: 760px) { .grid.two, .grid.three, .grid.four, .rate-grid { grid-template-columns: 1fr; } .wrap { padding: 14px; } .card { padding: 16px; } }
-    @media print {
-      body { background: #fff; color: #000; }
-      .card { background: #fff; box-shadow: none; border-color: #ddd; }
-      .no-print, .saved-actions, .btn-row, .rate-controls { display:none !important; }
-      .layout { grid-template-columns: 1fr; }
-      .summary { position: static; }
-      .brand-sub, .muted, .hint, .kpi .name, .saved-meta, .footer { color: #555 !important; }
-    }
+    .hero-stat { display:grid; gap:10px; align-content:start; }
+    .hero-price { font-size: clamp(28px, 3.5vw, 40px); font-weight: 900; margin-top: 6px; }
+    @media (max-width: 1180px) { .topbar, .hero, .layout { grid-template-columns: 1fr; } .summary { position: static; } }
+    @media (max-width: 760px) { .grid.two, .grid.three, .grid.four, .rate-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -151,28 +95,14 @@
           <div class="brand-mark">ACZ</div>
           <div>
             <h1>AutoChinaZakaz</h1>
-            <div class="brand-sub">Калькулятор растаможки и утильсбора в РФ (обновленная матрица 2025-2026, 30-мин мощность, база автомобилей).</div>
+            <div class="brand-sub">Точный алгоритм TKS. Полная сетка утильсбора РФ (с 1 января 2026 года по л.с. и объему).</div>
           </div>
-        </div>
-        <div class="badge-row" style="margin-top:14px">
-          <span class="badge">Целевой пункт выдачи: Уссурийск</span>
-          <span class="badge">Комиссия экспортёра: 120 000 ₽</span>
-          <span class="badge">Сохранение расчётов в браузере</span>
-          <span class="badge">Живые курсы валют</span>
         </div>
       </div>
       <div class="card hero-stat">
         <div class="muted">Текущий итог под ключ</div>
         <div class="hero-price mono" id="heroTotal">0 ₽</div>
-        <div class="chip-row">
-          <span class="chip blue" id="heroMethod">Методика: —</span>
-          <span class="chip" id="heroRates">Курсы: локальные</span>
-          <span class="chip green" id="heroSaveState">Черновик сохранён</span>
-        </div>
-        <div class="btn-row no-print">
-          <button id="recalcTop">Пересчитать</button>
-          <button class="secondary" id="refreshRatesTop">Обновить курсы</button>
-          <button class="secondary" id="printTop">Печать / PDF</button>
+        <div class="btn-row">
           <button class="gold" id="saveTop">Сохранить расчёт</button>
         </div>
       </div>
@@ -180,886 +110,410 @@
 
     <section class="hero">
       <div class="card">
-        <div class="title-row">
-          <h2>1. Сделка и параметры автомобиля</h2>
-          <div class="hint">Выберите марку/модель из списка или введите вручную.</div>
-        </div>
+        <div class="title-row"><h2>1. Автомобиль и стоимость</h2></div>
         <div class="grid four">
-          <label>Марка авто
-            <select id="carBrand"></select>
-          </label>
-          <label>Model авто
-            <select id="carModel"></select>
-          </label>
-          <label id="carNameWrap" class="hidden">Своя марка/модель
-            <input id="carName" placeholder="Ввести вручную..." />
-          </label>
-          <label>Цена авто
-            <input id="purchasePrice" type="number" min="0" step="0.01" value="150000" />
-          </label>
-          <label>Валюта покупки
+          <label>Марка <select id="carBrand"></select></label>
+          <label>Модель <select id="carModel"></select></label>
+          <label id="carNameWrap" class="hidden">Вручную <input id="carName" placeholder="Ввести..." /></label>
+          <label>Цена покупки <input id="purchasePrice" type="number" value="150000" /></label>
+          <label>Валюта
             <select id="purchaseCurrency">
-              <option value="CNY">Китайский юань (CNY)</option>
-              <option value="USD">Доллар США (USD)</option>
+              <option value="CNY">Юань (CNY)</option>
+              <option value="USD">Доллар (USD)</option>
               <option value="EUR">Евро (EUR)</option>
-              <option value="JPY">Японская иена (JPY)</option>
-              <option value="RUB">Российский рубль (RUB)</option>
+              <option value="RUB">Рубль (RUB)</option>
             </select>
           </label>
         </div>
         
         <div class="grid four" style="margin-top:14px">
-          <label>Страна покупки
-            <input id="purchaseCountry" value="Китай" />
-          </label>
-          <label>Год выпуска
-            <input id="releaseYear" type="number" min="1990" max="2100" step="1" value="2023" />
-          </label>
-          <label>Месяц выпуска
-            <select id="releaseMonth"></select>
-          </label>
-          <label>Методика ввоза
+          <label>Год выпуска <input id="releaseYear" type="number" value="2023" /></label>
+          <label>Месяц выпуска <select id="releaseMonth"></select></label>
+          <label>Статус ввоза
             <select id="importMethod">
-              <option value="personal">Физическое лицо — для личного использования</option>
-              <option value="resale">Физическое лицо — для перепродажи</option>
-              <option value="company">Юридическое лицо</option>
+              <option value="personal">Физ. лицо (для себя)</option>
+              <option value="company">Юр. лицо / Коммерция</option>
             </select>
           </label>
+          <label>Возраст авто <input id="vehicleAge" readonly /></label>
         </div>
 
         <div class="grid four" style="margin-top:14px">
-          <label>Тип силовой установки
+          <label>Тип двигателя
             <select id="powertrainType">
               <option value="gasoline">Бензин</option>
               <option value="diesel">Дизель</option>
               <option value="electric">Электро (BEV)</option>
-              <option value="parallelHybrid">Параллельный гибрид</option>
               <option value="seriesHybrid">Последовательный гибрид</option>
+              <option value="parallelHybrid">Параллельный гибрид</option>
             </select>
           </label>
-          <label>Объём ДВС, см³
-            <input id="engineCc" type="number" min="0" step="1" value="1998" />
-          </label>
-          <label>Мощность ДВС, л.с.
-            <input id="powerIceHp" type="number" min="0" step="0.1" value="190" />
-          </label>
-          <label>Кол-во эл. моторов
-            <select id="emCount">
-              <option value="0">0 моторов</option>
-              <option value="1">1 мотор</option>
-              <option value="2">2 мотора</option>
-              <option value="3">3 мотора</option>
-              <option value="4">4 мотора</option>
-            </select>
-          </label>
-        </div>
-
-        <div class="grid four hidden" id="motorsGrid" style="margin-top:14px; border-left: 3px solid var(--blue); padding-left: 10px;">
-          <label id="em1Box" class="hidden">Эл. мотор 1 (пик л.с.)
-            <input id="powerEm1" type="number" min="0" step="0.1" value="0" />
-          </label>
-          <label id="em2Box" class="hidden">Эл. мотор 2 (пик л.с.)
-            <input id="powerEm2" type="number" min="0" step="0.1" value="0" />
-          </label>
-          <label id="em3Box" class="hidden">Эл. мотор 3 (пик л.с.)
-            <input id="powerEm3" type="number" min="0" step="0.1" value="0" />
-          </label>
-          <label id="em4Box" class="hidden">Эл. мотор 4 (пик л.с.)
-            <input id="powerEm4" type="number" min="0" step="0.1" value="0" />
-          </label>
-        </div>
-
-        <div class="grid three" style="margin-top:14px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 14px;">
-          <label>Сумма 30-мин эл. мощности (×0.45)
-            <input id="power30" readonly style="color: var(--blue);" />
-          </label>
-          <label>ИТОГОВАЯ МОЩНОСТЬ (ДВС + Электро)
-            <input id="powerHp" readonly style="color: var(--gold); font-weight: bold; border-color: var(--gold);" />
-          </label>
-          <label>Возраст авто
-            <input id="vehicleAge" readonly />
-          </label>
-        </div>
-
-        <div class="hidden">
-           <input id="pickupPoint" value="Уссурийск" />
-           <input id="ageBand" />
-           <input id="customsValueRub" />
-        </div>
-
-        <div class="chip-row" style="margin-top:14px">
-          <span class="chip blue" id="dutyChip">Пошлина: —</span>
-          <span class="chip blue" id="vatChip">НДС: —</span>
-          <span class="chip blue" id="exciseChip">Акциз: —</span>
-          <span class="chip blue" id="utilChip">Утиль: —</span>
+          <label>Объём ДВС, см³ <input id="engineCc" type="number" value="1998" /></label>
+          <label>Итоговая Мощность (л.с.) <input id="powerIceHp" type="number" value="190" /></label>
+          <label>Логистика до границы (₽) <input id="toBorderRub" type="number" value="0" /></label>
         </div>
       </div>
 
       <div class="card">
-        <div class="title-row">
-          <h2>2. Дополнительные расходы</h2>
-        </div>
+        <div class="title-row"><h2>2. Оформление и Доставка</h2></div>
         <div class="grid four">
-          <label>Комиссия экспортёра
-            <input id="exporterFixedRub" type="number" value="120000" readonly />
-          </label>
-          <label>Расходы до границы, ₽
-            <input id="toBorderRub" type="number" min="0" step="1" value="0" />
-          </label>
-          <label>Банк — пресет комиссии
-            <select id="bankPreset">
-              <option value="none">Без комиссии</option>
-              <option value="vtbCnyOnline">ВТБ CNY — 2.5%</option>
-              <option value="vtbCnyOffice">ВТБ CNY в офисе — 3%</option>
-              <option value="vtbPaymentOffice">ВТБ платёж по рекв. — 2%</option>
-              <option value="manual">Ручная комиссия</option>
-            </select>
-          </label>
-          <label>Ручная комиссия банка, %
-            <input id="bankManualPercent" type="number" min="0" step="0.01" value="0" />
-          </label>
-        </div>
-        <div class="grid four" style="margin-top:14px">
-          <label>Страховка на время перегона, ₽
-            <input id="transitInsuranceRub" type="number" min="0" step="1" placeholder="Ручной ввод" />
-          </label>
-          <label>Стоимость перегона, ₽
-            <input id="deliveryRub" type="number" min="0" step="1" value="0" />
-          </label>
-          <label>Комиссия агента, ₽
-            <input id="agentRub" type="number" min="0" step="1" value="0" />
-          </label>
-          <label>Оформление на границе, ₽
-            <input id="borderRub" type="number" min="0" step="1" value="0" />
-          </label>
+          <label>Комиссия экспортёра <input id="exporterFixedRub" type="number" value="120000" readonly /></label>
+          <label>Перевод (Банк), % <input id="bankManualPercent" type="number" value="2.5" step="0.1" /></label>
+          <label>Перегон по РФ (₽) <input id="deliveryRub" type="number" value="0" /></label>
+          <label>Услуги брокера (₽) <input id="agentRub" type="number" value="0" /></label>
         </div>
       </div>
     </section>
 
     <section class="layout">
-      <div class="grid" style="gap:18px; min-width: 0;">
-        <div class="card no-print">
-          <div class="title-row">
-            <h2>3. Курсы валют</h2>
-          </div>
-          <div class="btn-row rate-controls" style="margin-bottom:14px">
-            <button id="refreshRates">Обновить курсы</button>
-            <button class="secondary" id="saveRates">Сохранить ручные курсы</button>
-            <span class="chip" id="rateStatus">Источник: локальные значения</span>
-            <span class="chip blue" id="rateUpdated">Дата: —</span>
+      <div class="grid">
+        <div class="card">
+          <div class="title-row"><h2>3. Курсы валют (ЦБ)</h2></div>
+          <div class="btn-row" style="margin-bottom:14px">
+            <button id="refreshRates" class="secondary small">Обновить из интернета</button>
           </div>
           <div class="rate-grid" id="rateGrid"></div>
         </div>
 
         <div class="card">
-          <div class="title-row">
-            <h2>4. Разбивка расчёта</h2>
-          </div>
+          <div class="title-row"><h2>4. Таможенный расчет (TKS)</h2></div>
           <table>
-            <thead>
-              <tr><th>Статья</th><th>Сумма, ₽</th></tr>
-            </thead>
+            <thead><tr><th>Статья</th><th>Сумма, ₽</th></tr></thead>
             <tbody id="breakdownBody"></tbody>
           </table>
-          <div class="note" style="margin-top:14px" id="calculationNote"></div>
         </div>
 
         <div class="card">
-          <div class="title-row">
-            <h2>5. Заявка клиента</h2>
+          <div class="title-row"><h2>5. Отправка менеджеру</h2></div>
+          <div class="grid two" style="margin-bottom:14px">
+            <label>Имя <input id="leadName" placeholder="Александр" /></label>
+            <label>Телефон <input id="leadContact" placeholder="+7..." /></label>
           </div>
-          <div class="form-grid">
-            <div class="grid" style="gap:14px">
-              <div class="grid two">
-                <label>Имя клиента
-                  <input id="leadName" placeholder="Например: Александр" />
-                </label>
-                <label>Телефон / WhatsApp
-                  <input id="leadContact" placeholder="+7 ..." />
-                </label>
-              </div>
-              <div class="grid two">
-                <label>Город клиента
-                  <input id="leadCity" placeholder="Например: Владивосток" />
-                </label>
-                <label>Ориентир по бюджету, ₽
-                  <input id="leadBudget" type="number" min="0" step="1" placeholder="Необязательно" />
-                </label>
-              </div>
-              <label>Комментарий по заявке
-                <textarea id="leadComment" placeholder="Пожелания по марке, комплектации..."></textarea>
-              </label>
-            </div>
-            <div class="card soft" style="padding:16px">
-              <div class="muted">Готовый текст заявки</div>
-              <textarea id="leadPreview" readonly style="margin-top:10px; min-height: 210px;"></textarea>
-              <div class="btn-row no-print" style="margin-top:12px">
-                <button id="buildLeadBtn">Отправить расчёт в чат</button>
-                <button class="secondary" id="copyLeadBtn">Скопировать</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card no-print">
-          <div class="title-row">
-            <h2>6. Сохранение расчётов</h2>
-          </div>
-          <div class="btn-row" style="margin-bottom:14px">
-            <button class="gold" id="saveScenarioBtn">Сохранить расчёт</button>
-            <button class="secondary" id="downloadScenarioBtn">Скачать JSON</button>
-            <button class="secondary" id="importScenarioBtn">Загрузить JSON</button>
-            <input id="importScenarioInput" type="file" accept="application/json" class="hidden" />
-          </div>
-          <div class="divider"></div>
-          <div class="list" id="savedList"></div>
+          <button id="buildLeadBtn">Отправить расчёт в Telegram</button>
         </div>
       </div>
 
       <aside class="summary">
         <div class="card soft">
-          <div class="muted">Итог под ключ в Уссурийске</div>
+          <div class="muted">Итоговая цена (под ключ)</div>
           <div class="summary-value mono" id="totalRub">0 ₽</div>
           <div class="chip-row">
             <span class="chip blue" id="summaryMethod">Методика: —</span>
-            <span class="chip green" id="summaryAge">Возраст: —</span>
+            <span class="chip green" id="utilChip">Утиль: —</span>
           </div>
           <div class="kpis">
             <div class="kpi"><span class="name">Цена авто в ₽</span><span class="value mono" id="kpiPrice">0 ₽</span></div>
             <div class="kpi"><span class="name">Таможня и налоги</span><span class="value mono" id="kpiTaxes">0 ₽</span></div>
             <div class="kpi"><span class="name">Экспортёр + банк</span><span class="value mono" id="kpiBank">0 ₽</span></div>
-            <div class="kpi"><span class="name">Логистика и оформление</span><span class="value mono" id="kpiOps">0 ₽</span></div>
+            <div class="kpi"><span class="name">Логистика и брокер</span><span class="value mono" id="kpiOps">0 ₽</span></div>
           </div>
-          <div class="btn-row no-print" style="margin-top:14px">
-            <button id="recalcBtn">Пересчитать</button>
-            <button class="secondary" id="printBtn">Печать</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="title-row"><h2>7. Автоматические правила</h2></div>
-          <div class="list">
-            <div class="saved-item">
-              <div class="saved-head"><div class="saved-title">Пошлина</div><div class="saved-meta" id="dutyMeta">—</div></div>
-              <div class="muted" id="dutyRuleText">—</div>
-            </div>
-            <div class="saved-item">
-              <div class="saved-head"><div class="saved-title">НДС</div><div class="saved-meta" id="vatMeta">—</div></div>
-              <div class="muted" id="vatRuleText">—</div>
-            </div>
-            <div class="saved-item">
-              <div class="saved-head"><div class="saved-title">Акциз</div><div class="saved-meta" id="exciseMeta">—</div></div>
-              <div class="muted" id="exciseRuleText">—</div>
-            </div>
-            <div class="saved-item">
-              <div class="saved-head"><div class="saved-title">Утильсбор</div><div class="saved-meta" id="utilMeta">—</div></div>
-              <div class="muted" id="utilRuleText">—</div>
-            </div>
-          </div>
+          <button id="recalcBtn" style="margin-top:14px; width:100%">Пересчитать</button>
         </div>
       </aside>
     </section>
-
-    <div class="footer">AutoChinaZakaz · автономная HTML‑страница</div>
   </div>
 
   <script>
-    // БАЗА ДАННЫХ АВТОМОБИЛЕЙ
     const carDatabase = {
-      "Li Auto (Lixiang)": ["L6", "L7", "L8", "L9", "Mega"],
+      "Geely": ["Monjaro", "Tugella", "Coolray", "Preface", "Atlas"],
+      "Changan": ["UNI-K", "UNI-T", "UNI-V", "CS55 Plus", "CS75 Plus"],
+      "Chery / Exeed": ["Tiggo 8 Pro Max", "Arrizo 8", "Exeed RX"],
+      "Li Auto (Lixiang)": ["L6", "L7", "L8", "L9"],
       "Zeekr": ["001", "007", "009", "X"],
-      "Geely": ["Monjaro", "Tugella", "Coolray", "Preface", "Atlas", "Boyue", "Galaxy L7", "Galaxy E8"],
-      "BYD": ["Song Plus", "Tang", "Han", "Seal", "Yuan Plus", "YangWang U8", "Qin Plus", "Dolphin", "Seagull"],
-      "Changan": ["UNI-K", "UNI-T", "UNI-V", "CS55 Plus", "CS75 Plus", "Hunter", "Deepal S7"],
-      "Voyah": ["Free", "Dream", "Passion"],
-      "Chery / Exeed": ["Tiggo 8 Pro Max", "Tiggo 7 Pro", "Arrizo 8", "Exeed RX", "Exeed VX"],
-      "Tank / Haval": ["Tank 300", "Tank 500", "Tank 700 Hi4-T", "Haval Dargo", "Haval Jolion", "Haval H9"],
-      "Xiaomi": ["SU7 RWD", "SU7 Max AWD"],
-      "Avatr / Aito": ["Avatr 11", "Avatr 12", "Aito M7", "Aito M9"],
-      "Nio / Xpeng": ["Nio ES6", "Nio ET7", "Xpeng G9", "Xpeng P7"],
-      "VW (China)": ["ID.4 CROZZ", "ID.6 CROZZ", "Teramont", "Tiguan L", "Passat"],
-      "Toyota (China)": ["Camry", "RAV4", "Avalon", "Highlander", "bZ4X", "bZ3"],
-      "BMW / Audi (China)": ["BMW i3", "BMW X5 xDrive30Li", "Audi Q5 e-tron"],
+      "BYD": ["Song Plus", "Tang", "Han", "Seal"],
+      "Toyota (China)": ["Camry", "RAV4", "Avalon"],
       "Другая марка...": ["Ввести вручную..."]
     };
 
     const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-    const RATE_CODES = ['RUB','CNY','USD','EUR','JPY','KZT','KRW','BYN'];
-    const DEFAULT_RATES = { RUB: 1, CNY: 13.5, USD: 98.0, EUR: 108.2, JPY: 0.61, KZT: 0.19, KRW: 0.068, BYN: 28.5 };
-    const STORAGE_KEYS = { rates: 'acz_rates_v4', draft: 'acz_draft_v4', saves: 'acz_saves_v4' };
+    const RATE_CODES = ['RUB','CNY','USD','EUR'];
+    const DEFAULT_RATES = { RUB: 1, CNY: 13.5, USD: 98.0, EUR: 108.2 };
     
-    const FIELD_IDS = [
-      'carBrand', 'carModel', 'carName', 'purchasePrice','purchaseCurrency','purchaseCountry','releaseYear','releaseMonth',
-      'importMethod','engineCc','powerIceHp','powerEm1','powerEm2','powerEm3','powerEm4','emCount','powertrainType',
-      'toBorderRub','bankPreset','bankManualPercent','transitInsuranceRub','deliveryRub','agentRub','borderRub',
-      'leadName','leadContact','leadCity','leadBudget','leadComment'
-    ];
-
     const $ = (id) => document.getElementById(id);
-    const state = { rates: { ...DEFAULT_RATES }, rateSource: 'локальные значения', rateDate: null, syncingPower: false };
+    const state = { rates: { ...DEFAULT_RATES } };
 
-    function fillMonths() {
-      $('releaseMonth').innerHTML = MONTHS.map((name, i) => `<option value="${i+1}">${name}</option>`).join('');
-      $('releaseMonth').value = '1';
-    }
+    function initSelects() {
+      const monthSel = $('releaseMonth');
+      monthSel.innerHTML = MONTHS.map((m, i) => `<option value="${i+1}">${m}</option>`).join('');
+      monthSel.value = '1';
 
-    function initCarSelects() {
       const brandSel = $('carBrand');
       const modelSel = $('carModel');
-      if (!brandSel || !modelSel) return;
-      
       brandSel.innerHTML = Object.keys(carDatabase).map(b => `<option value="${b}">${b}</option>`).join('');
       
       const updateModels = () => {
         const brand = brandSel.value;
-        const models = carDatabase[brand] || [];
-        modelSel.innerHTML = models.map(m => `<option value="${m}">${m}</option>`).join('');
-        
+        modelSel.innerHTML = (carDatabase[brand]||[]).map(m => `<option value="${m}">${m}</option>`).join('');
         if (brand === "Другая марка...") {
-          $('carNameWrap').classList.remove('hidden');
-          modelSel.style.display = 'none';
+          $('carNameWrap').classList.remove('hidden'); modelSel.style.display = 'none';
         } else {
-          $('carNameWrap').classList.add('hidden');
-          modelSel.style.display = 'block';
+          $('carNameWrap').classList.add('hidden'); modelSel.style.display = 'block';
           $('carName').value = brand + ' ' + modelSel.value;
         }
         calculate();
       };
-
       brandSel.addEventListener('change', updateModels);
-      modelSel.addEventListener('change', () => {
-          if (brandSel.value !== "Другая марка...") {
-              $('carName').value = brandSel.value + ' ' + modelSel.value;
-          }
-          calculate();
-      });
-      $('carName').addEventListener('input', calculate);
-      
+      modelSel.addEventListener('change', () => { $('carName').value = brandSel.value + ' ' + modelSel.value; calculate(); });
       updateModels();
     }
 
-    function updateMotorVisibility() {
-        const pt = $('powertrainType').value;
-        const count = parseInt($('emCount').value) || 0;
-        const showEm = (pt !== 'gasoline' && pt !== 'diesel');
-        
-        $('motorsGrid').classList.toggle('hidden', !(showEm && count > 0));
-        for(let i=1; i<=4; i++) {
-            $(`em${i}Box`).classList.toggle('hidden', i > count);
-        }
-    }
-
-    function fmtRub(v) { return `${Number(v || 0).toLocaleString('ru-RU', { maximumFractionDigits: 0 })} ₽`; }
-    function fmtNum(v, digits = 2) { return Number(v || 0).toLocaleString('ru-RU', { minimumFractionDigits: 0, maximumFractionDigits: digits }); }
-    function nowStamp() { return new Date().toLocaleString('ru-RU'); }
-    function safeNum(v) { const n = parseFloat(v); return Number.isFinite(n) ? n : 0; }
-
-    function loadRates() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEYS.rates) || 'null');
-        if (saved && saved.rates) {
-          state.rates = { ...DEFAULT_RATES, ...saved.rates };
-          state.rateSource = saved.source || 'локальные значения';
-          state.rateDate = saved.updatedAt || null;
-        }
-      } catch {}
-    }
-
-    function saveRatesToStorage(source = state.rateSource) {
-      localStorage.setItem(STORAGE_KEYS.rates, JSON.stringify({ rates: state.rates, source, updatedAt: state.rateDate || nowStamp() }));
-      state.rateSource = source;
-      $('heroRates').textContent = `Курсы: ${source}`;
-      $('rateStatus').textContent = `Источник: ${source}`;
-      $('rateUpdated').textContent = `Дата: ${state.rateDate || '—'}`;
-    }
-
     function renderRates() {
-      const grid = $('rateGrid');
-      grid.innerHTML = RATE_CODES.map(code => `
+      $('rateGrid').innerHTML = RATE_CODES.map(c => `
         <div class="rate-box">
-          <div class="rate-code">1 ${code} = ₽</div>
-          <input data-rate="${code}" type="number" step="0.0001" min="0" value="${state.rates[code]}" ${code === 'RUB' ? 'readonly' : ''} />
+          <div class="rate-code">1 ${c} = ₽</div>
+          <input data-rate="${c}" type="number" step="0.01" value="${state.rates[c]}" ${c==='RUB'?'readonly':''} />
         </div>`).join('');
-      grid.querySelectorAll('[data-rate]').forEach(input => {
-        input.addEventListener('input', () => {
-          const code = input.dataset.rate;
-          state.rates[code] = safeNum(input.value) || (code === 'RUB' ? 1 : 0);
-          state.rateSource = 'ручные значения';
-          state.rateDate = nowStamp();
-          saveRatesToStorage('ручные значения');
-          scheduleDraftSave();
+      document.querySelectorAll('[data-rate]').forEach(inp => {
+        inp.addEventListener('input', () => {
+          state.rates[inp.dataset.rate] = parseFloat(inp.value) || 0;
           calculate();
         });
       });
-      $('heroRates').textContent = `Курсы: ${state.rateSource}`;
-      $('rateStatus').textContent = `Источник: ${state.rateSource}`;
-      $('rateUpdated').textContent = `Дата: ${state.rateDate || '—'}`;
-    }
-
-    function getRate(code) { return state.rates[code] || 0; }
-    function amountToRub(amount, currency) { return safeNum(amount) * getRate(currency); }
-
-    function rateFromUsdPayload(payload) {
-      const usdToRub = payload.rates?.RUB;
-      if (!usdToRub) return null;
-      const out = { RUB: 1 };
-      for (const code of RATE_CODES) {
-        if (code === 'RUB') { out.RUB = 1; continue; }
-        if (code === 'USD') { out.USD = usdToRub; continue; }
-        const rate = payload.rates[code];
-        if (rate) out[code] = usdToRub / rate;
-      }
-      return out;
     }
 
     async function refreshRates() {
       try {
-        const r = await fetch('https://open.er-api.com/v6/latest/USD', { cache: 'no-store' });
+        const r = await fetch('https://open.er-api.com/v6/latest/USD');
         const json = await r.json();
-        const rates = rateFromUsdPayload(json);
-        if (rates) {
-            state.rates = { ...state.rates, ...rates };
-            state.rateSource = 'open.er-api';
-            state.rateDate = nowStamp();
-            saveRatesToStorage(state.rateSource);
-            renderRates();
-            calculate();
+        const usdRub = json.rates.RUB;
+        if (usdRub) {
+          RATE_CODES.forEach(c => {
+            if (c !== 'RUB' && c !== 'USD' && json.rates[c]) {
+              state.rates[c] = usdRub / json.rates[c];
+            }
+          });
+          state.rates.USD = usdRub;
+          renderRates(); calculate();
         }
-      } catch (err) {
-        state.rateSource = 'ошибка сети, локальные';
-        state.rateDate = nowStamp();
-        saveRatesToStorage(state.rateSource);
-        renderRates();
-        calculate();
+      } catch (e) { alert("Ошибка обновления курсов"); }
+    }
+
+    function getAge() {
+      const y = parseFloat($('releaseYear').value)||2023, m = parseFloat($('releaseMonth').value)||1;
+      const d = new Date(), ageM = (d.getFullYear()-y)*12 + (d.getMonth()+1 - m);
+      return ageM / 12;
+    }
+
+    // ТАМОЖЕННОЕ ОФОРМЛЕНИЕ
+    function calcCustomsFee(rub) {
+      if (rub <= 200000) return 775;
+      if (rub <= 450000) return 1550;
+      if (rub <= 1200000) return 3100;
+      if (rub <= 2700000) return 8530;
+      if (rub <= 4200000) return 12000;
+      if (rub <= 5500000) return 15500;
+      if (rub <= 7000000) return 20000;
+      if (rub <= 8000000) return 23000;
+      if (rub <= 9000000) return 25000;
+      if (rub <= 10000000) return 27000;
+      return 30000;
+    }
+
+    // ПОШЛИНА ФИЗЛИЦО (ЕТС)
+    function calcPersonalDuty(eurValue, cc, age) {
+      if (age < 3) {
+        let rate = 0.48, minCc = 20;
+        if (eurValue <= 8500) { rate = 0.54; minCc = 2.5; }
+        else if (eurValue <= 16700) { minCc = 3.5; }
+        else if (eurValue <= 42300) { minCc = 5.5; }
+        else if (eurValue <= 84500) { minCc = 7.5; }
+        else if (eurValue <= 169000) { minCc = 15; }
+        return Math.max(eurValue * rate, cc * minCc);
       }
+      let r = 0;
+      if (age >= 3 && age <= 5) {
+        if (cc <= 1000) r = 1.5; else if (cc <= 1500) r = 1.7; else if (cc <= 1800) r = 2.5;
+        else if (cc <= 2300) r = 2.7; else if (cc <= 3000) r = 3.0; else r = 3.6;
+      } else {
+        if (cc <= 1000) r = 3.0; else if (cc <= 1500) r = 3.2; else if (cc <= 1800) r = 3.5;
+        else if (cc <= 2300) r = 4.8; else if (cc <= 3000) r = 5.0; else r = 5.7;
+      }
+      return cc * r;
     }
 
-    function isElectricLike(pt) { return ['electric', 'seriesHybrid', 'hydrogen'].includes(pt); }
-
-    function vehicleAgeData() {
-      const year = safeNum($('releaseYear').value);
-      const month = safeNum($('releaseMonth').value);
-      const releaseDate = new Date(year, Math.max(0, month - 1), 1);
-      const now = new Date();
-      const months = Math.max(0, (now.getFullYear() - releaseDate.getFullYear()) * 12 + (now.getMonth() - releaseDate.getMonth()));
-      const years = months / 12;
-      return { months, years };
-    }
-
-    function ageBandFromYears(years) {
-      if (years < 3) return 'до 3 лет';
-      if (years < 5) return 'от 3 до 5 лет';
-      if (years < 7) return 'от 5 до 7 лет';
-      return 'более 7 лет';
-    }
-
-    function updateAgeDisplay() {
-      const { years, months } = vehicleAgeData();
-      $('vehicleAge').value = `${fmtNum(years, 2)} лет (${months} мес.)`;
-      $('ageBand').value = ageBandFromYears(years);
-      $('summaryAge').textContent = `Возраст: ${ageBandFromYears(years)}`;
-    }
-
-    function customsValueRub() { return amountToRub($('purchasePrice').value, $('purchaseCurrency').value) + safeNum($('toBorderRub').value); }
-
-    function customsFeeByValue(rub) {
-      if (rub <= 200000) return 1231;
-      if (rub <= 450000) return 2462;
-      if (rub <= 1200000) return 4924;
-      if (rub <= 2700000) return 13541;
-      if (rub <= 4200000) return 18465;
-      if (rub <= 5500000) return 21344;
-      if (rub <= 10000000) return 49240;
-      return 73860;
-    }
-
-    function exciseRate(hp) {
-      if (hp <= 90) return 0;
-      if (hp <= 150) return 68;
-      if (hp <= 200) return 636;
-      if (hp <= 300) return 1044;
-      if (hp <= 400) return 1784;
-      if (hp <= 500) return 1845;
-      return 1900;
-    }
-
-    function getUtilMatrixCoeff(cc, hp, ageYears) {
+    // ТАБЛИЦА КОЭФФИЦИЕНТОВ УТИЛЬСБОРА НА 2026 ГОД 
+    function getUtilMatrixCoeff(method, pt, cc, hp, ageYears) {
         const isNew = ageYears < 3;
-        const effCc = cc === 0 ? 1500 : cc;
+        const isPersonal = method === 'personal';
         
-        if (effCc <= 1000) {
-            if (hp <= 160) return isNew ? 0.17 : 0.26;
-            if (hp <= 190) return isNew ? 12.80 : 23.70;
-            if (hp <= 220) return isNew ? 13.20 : 15.84;
-            if (hp <= 250) return isNew ? 13.50 : 25.10;
-            return isNew ? 14.40 : 25.10;
-        } else if (effCc <= 2000) {
-            if (hp <= 160) return isNew ? 0.17 : 0.26;
-            if (hp <= 190) return isNew ? 37.50 : 45.00;
-            if (hp <= 220) return isNew ? 39.70 : 47.64;
-            if (hp <= 250) return isNew ? 42.10 : 50.52;
-            if (hp <= 279) return isNew ? 47.60 : 57.12;
-            if (hp <= 310) return isNew ? 53.80 : 64.56;
-            if (hp <= 340) return isNew ? 60.80 : 72.96;
-            if (hp <= 370) return isNew ? 69.30 : 83.16;
-            if (hp <= 400) return isNew ? 79.00 : 94.80;
-            if (hp <= 430) return isNew ? 90.00 : 108.00;
-            if (hp <= 460) return isNew ? 102.70 : 123.24;
-            if (hp <= 500) return isNew ? 117.00 : 140.40;
-            return isNew ? 133.40 : 160.08;
-        } else if (effCc <= 3000) {
-            if (hp <= 160) return isNew ? 0.17 : 0.26;
-            if (hp <= 190) return isNew ? 96.11 : 144.00;
-            if (hp <= 220) return isNew ? 98.50 : 145.90;
-            if (hp <= 250) return isNew ? 100.10 : 148.00;
-            if (hp <= 279) return isNew ? 105.00 : 152.00;
-            if (hp <= 310) return isNew ? 109.20 : 157.10;
-            if (hp <= 340) return isNew ? 113.60 : 161.40;
-            if (hp <= 370) return isNew ? 118.10 : 167.00;
-            if (hp <= 400) return isNew ? 122.90 : 171.20;
-            if (hp <= 430) return isNew ? 127.80 : 175.30;
-            if (hp <= 460) return isNew ? 132.90 : 180.50;
-            if (hp <= 500) return isNew ? 138.20 : 185.30;
-            return isNew ? 143.70 : 190.50;
-        } else {
-            if (hp <= 160) return isNew ? 0.17 : 0.26;
-            return isNew ? 143.70 : 190.50;
+        // EV и последовательные гибриды
+        if (pt === 'electric' || pt === 'seriesHybrid') {
+            if (hp <= 80) return isPersonal ? (isNew ? 0.17 : 0.26) : (isNew ? 40.04 : 70.44);
+            if (hp <= 100) return isNew ? 49.56 : 82.08;
+            if (hp <= 130) return isNew ? 65.88 : 95.64;
+            if (hp <= 160) return isNew ? 78.00 : 111.36;
+            if (hp <= 190) return isNew ? 92.40 : 129.72;
+            if (hp <= 220) return isNew ? 109.68 : 151.20;
+            if (hp <= 250) return isNew ? 129.96 : 176.16;
+            if (hp <= 280) return isNew ? 153.96 : 205.20;
+            return isNew ? 182.40 : 239.04;
         }
-    }
 
-    function utilEstimate(method, pt, ageYears, cc, hp) {
-      const personal = method === 'personal';
-      const base = 20000;
-      const isLgota = personal && hp <= 160 && cc <= 3000;
-
-      if (isLgota) {
-        const coeff = ageYears < 3 ? 0.17 : 0.26;
-        return {
-          amount: base * coeff,
-          base, coeff, exact: true,
-          note: `Льготный утиль ФЛ (до 160 л.с.): БС ${fmtRub(base)} × К ${fmtNum(coeff, 2)}.`
-        };
-      }
-
-      let coeff = getUtilMatrixCoeff(cc, hp, ageYears);
-      coeff = coeff * 1.10;
-
-      return {
-        amount: base * coeff,
-        base, coeff, exact: false,
-        note: `Коммерческий утиль 2026 (Матрица Мощность/Объем): БС ${fmtRub(base)} × К ${fmtNum(coeff, 2)}.`
-      };
-    }
-
-    function personalDutyForIce(valueRub, cc, ageYears, eurRub) {
-      const valueEur = valueRub / eurRub;
-      if (ageYears < 3) {
-        const bands = [
-          { limit: 8500, percent: 54, eurPerCc: 2.5 },
-          { limit: 16700, percent: 48, eurPerCc: 3.5 },
-          { limit: 42300, percent: 48, eurPerCc: 5.5 },
-          { limit: 84500, percent: 48, eurPerCc: 7.5 },
-          { limit: 169000, percent: 48, eurPerCc: 15 },
-          { limit: Infinity, percent: 48, eurPerCc: 20 }
-        ];
-        const band = bands.find(b => valueEur <= b.limit);
-        const percentRub = valueRub * band.percent / 100;
-        const minRub = cc * band.eurPerCc * eurRub;
-        return { amount: Math.max(percentRub, minRub), ruleShort: `${band.percent}% / минимум ${band.eurPerCc} €/см³`, ruleLong: `ФЛ, авто до 3 лет: ${band.percent}% от стоимости, но не менее ${band.eurPerCc} €/см³.` };
-      }
-      const eurPerCc = ageYears < 5
-        ? (cc <= 1000 ? 1.5 : cc <= 1500 ? 1.7 : cc <= 1800 ? 2.5 : cc <= 2300 ? 2.7 : cc <= 3000 ? 3 : 3.6)
-        : (cc <= 1000 ? 3 : cc <= 1500 ? 3.2 : cc <= 1800 ? 3.5 : cc <= 2300 ? 4.8 : cc <= 3000 ? 5 : 5.7);
-      return { amount: cc * eurPerCc * eurRub, ruleShort: `${eurPerCc} €/см³`, ruleLong: `ФЛ, авто ${ageYears < 5 ? '3-5' : '5+'} лет: ${eurPerCc} €/см³.` };
-    }
-
-    function companyDutyForCombustion(valueRub, cc, ageYears, eurRub) {
-      if (ageYears < 3) return { amount: valueRub * 0.15, ruleShort: `15%`, ruleLong: `Коммерческий ввоз до 3 лет: 15%.` };
-      return { amount: valueRub * 0.20, ruleShort: `20%`, ruleLong: `Коммерческий ввоз от 3 лет: 20%.` };
-    }
-
-    function dutyResult(customsRub, cc, hp, ageYears, method, pt) {
-      const eurRub = getRate('EUR') || DEFAULT_RATES.EUR;
-      if (isElectricLike(pt)) return { amount: customsRub * 0.15, ruleShort: '15%', ruleLong: `Электромобиль: 15% от стоимости.` };
-      if (method === 'personal') return personalDutyForIce(customsRub, cc, ageYears, eurRub);
-      return companyDutyForCombustion(customsRub, cc, ageYears, eurRub);
-    }
-
-    function bankCommissionRub(amountRub) {
-      const preset = $('bankPreset').value;
-      if (preset === 'none') return { amount: 0, rule: 'Без комиссии' };
-      if (preset === 'vtbCnyOnline') return { amount: amountRub * 0.025, rule: 'ВТБ CNY — 2.5%' };
-      if (preset === 'vtbCnyOffice') return { amount: amountRub * 0.03, rule: 'ВТБ CNY в офисе — 3%' };
-      if (preset === 'vtbPaymentOffice') {
-        const raw = amountRub * 0.02;
-        return { amount: Math.min(3000, Math.max(50, raw)), rule: 'ВТБ платёж по реквизитам — 2%' };
-      }
-      const percent = safeNum($('bankManualPercent').value);
-      return { amount: amountRub * percent / 100, rule: `Ручная ставка банка — ${fmtNum(percent, 2)}%` };
-    }
-
-    function readFormState() {
-      const form = {};
-      FIELD_IDS.forEach(id => { if($(id)) form[id] = $(id).value; });
-      form.rates = { ...state.rates };
-      form.rateSource = state.rateSource;
-      form.rateDate = state.rateDate;
-      return form;
-    }
-
-    function applyFormState(data) {
-      if (!data) return;
-      FIELD_IDS.forEach(id => {
-        if (Object.prototype.hasOwnProperty.call(data, id) && $(id)) {
-          $(id).value = data[id];
+        // ДВС и Параллельные гибриды <= 2000 cc
+        if (cc <= 2000) {
+            if (hp <= 160) return isPersonal ? (isNew ? 0.17 : 0.26) : (isNew ? 40.04 : 70.44);
+            if (hp <= 190) return isNew ? 45.00 : 74.64;
+            if (hp <= 220) return isNew ? 47.64 : 79.20;
+            if (hp <= 250) return isNew ? 50.52 : 83.88;
+            if (hp <= 280) return isNew ? 57.12 : 91.92;
+            if (hp <= 310) return isNew ? 64.56 : 100.56;
+            if (hp <= 340) return isNew ? 72.96 : 110.16;
+            if (hp <= 370) return isNew ? 83.16 : 120.60;
+            if (hp <= 400) return isNew ? 94.80 : 132.00;
+            if (hp <= 430) return isNew ? 108.00 : 144.60;
+            if (hp <= 460) return isNew ? 123.24 : 158.40;
+            if (hp <= 500) return isNew ? 140.40 : 173.40;
+            return isNew ? 160.08 : 189.84;
         }
-      });
-      if (data.rates) {
-        state.rates = { ...state.rates, ...data.rates };
-        state.rateSource = data.rateSource || state.rateSource;
-        state.rateDate = data.rateDate || state.rateDate;
-        renderRates();
-      }
-      updateAgeDisplay();
-      updateMotorVisibility();
-      calculate();
-      buildLeadPreview();
-    }
 
-    let draftTimer = null;
-    function scheduleDraftSave() {
-      clearTimeout(draftTimer);
-      draftTimer = setTimeout(saveDraft, 300);
-    }
-    function saveDraft() {
-      try { localStorage.setItem(STORAGE_KEYS.draft, JSON.stringify({ data: readFormState(), savedAt: nowStamp() })); $('heroSaveState').textContent = 'Черновик сохранён'; } catch {}
-    }
-    function restoreDraft() {
-      try { const raw = JSON.parse(localStorage.getItem(STORAGE_KEYS.draft) || 'null'); if (raw?.data) { applyFormState(raw.data); $('heroSaveState').textContent = `Черновик: ${raw.savedAt}`; } } catch {}
-    }
+        // ДВС 2000 - 3000 cc
+        if (cc <= 3000) {
+            if (hp <= 160) return isPersonal ? (isNew ? 0.17 : 0.26) : (isNew ? 112.52 : 170.36);
+            if (hp <= 190) return isNew ? 115.34 : 172.80;
+            if (hp <= 220) return isNew ? 118.20 : 175.08;
+            if (hp <= 250) return isNew ? 120.12 : 177.60;
+            if (hp <= 280) return isNew ? 126.00 : 183.00;
+            if (hp <= 310) return isNew ? 131.04 : 188.52;
+            if (hp <= 340) return isNew ? 136.32 : 193.68;
+            if (hp <= 370) return isNew ? 141.72 : 199.08;
+            if (hp <= 400) return isNew ? 147.48 : 204.72;
+            if (hp <= 430) return isNew ? 153.36 : 210.48;
+            if (hp <= 460) return isNew ? 159.48 : 216.36;
+            if (hp <= 500) return isNew ? 165.84 : 222.36;
+            return isNew ? 172.44 : 228.60;
+        }
 
-    function getSavedScenarios() { try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.saves) || '[]'); } catch { return []; } }
-    function setSavedScenarios(items) { localStorage.setItem(STORAGE_KEYS.saves, JSON.stringify(items)); }
+        // ДВС 3000 - 3500 cc (Всегда коммерческий)
+        if (cc <= 3500) {
+            if (hp <= 160) return isNew ? 129.20 : 197.81;
+            if (hp <= 190) return isNew ? 131.76 : 200.04;
+            if (hp <= 220) return isNew ? 134.40 : 202.20;
+            if (hp <= 250) return isNew ? 137.16 : 204.36;
+            if (hp <= 280) return isNew ? 140.52 : 207.24;
+            if (hp <= 310) return isNew ? 144.00 : 212.40;
+            if (hp <= 340) return isNew ? 151.92 : 217.80;
+            if (hp <= 370) return isNew ? 160.32 : 224.28;
+            if (hp <= 400) return isNew ? 169.20 : 231.00;
+            if (hp <= 430) return isNew ? 178.44 : 237.96;
+            if (hp <= 460) return isNew ? 188.28 : 245.04;
+            if (hp <= 500) return isNew ? 198.60 : 252.48;
+            return isNew ? 209.52 : 260.04;
+        }
 
-    function saveScenario() {
-      const totalText = $('totalRub').textContent;
-      const suggested = $('carName').value || 'Новый расчёт';
-      const title = prompt('Название расчёта', suggested);
-      if (!title) return;
-      const items = getSavedScenarios();
-      const payload = { id: `${Date.now()}_${Math.random().toString(36).slice(2,8)}`, title, createdAt: nowStamp(), totalText, data: readFormState() };
-      items.unshift(payload);
-      setSavedScenarios(items.slice(0, 50));
-      renderSavedScenarios();
-      saveDraft();
-    }
-
-    function renderSavedScenarios() {
-      const items = getSavedScenarios();
-      const box = $('savedList');
-      if (!items.length) { box.innerHTML = '<div class="muted">Сохранённых расчётов пока нет.</div>'; return; }
-      box.innerHTML = items.map(item => `
-        <div class="saved-item">
-          <div class="saved-head">
-            <div><div class="saved-title">${escapeHtml(item.title)}</div><div class="saved-meta">${item.createdAt || ''}</div></div>
-            <div class="saved-title mono">${escapeHtml(item.totalText || '')}</div>
-          </div>
-          <div class="saved-meta">${escapeHtml(item.data?.carName || 'Без названия авто')}</div>
-          <div class="saved-actions">
-            <button class="small" onclick="window.__loadScenario('${item.id}')">Загрузить</button>
-            <button class="secondary small" onclick="window.__deleteScenario('${item.id}')">Удалить</button>
-          </div>
-        </div>`).join('');
-    }
-
-    function escapeHtml(v) { return String(v ?? '').replace(/[&<>"']/g, ch => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[ch])); }
-    window.__loadScenario = function(id) { const item = getSavedScenarios().find(x => x.id === id); if (!item) return; applyFormState(item.data); saveDraft(); };
-    window.__deleteScenario = function(id) { setSavedScenarios(getSavedScenarios().filter(x => x.id !== id)); renderSavedScenarios(); };
-
-    function buildLeadPreview() {
-      const text = [
-        'Заявка AutoChinaZakaz', '',
-        `Клиент: ${$('leadName').value || '—'}`,
-        `Контакт: ${$('leadContact').value || '—'}`,
-        `Автомобиль: ${$('carName').value || '—'}`,
-        `Цена покупки: ${fmtNum($('purchasePrice').value, 2)} ${$('purchaseCurrency').value}`,
-        `Итог под ключ: ${$('totalRub').textContent}`,
-        `Комментарий: ${$('leadComment').value || '—'}`
-      ].join('\n');
-      $('leadPreview').value = text;
-      return text;
-    }
-
-    async function copyLeadPreview() {
-      const text = buildLeadPreview();
-      try { await navigator.clipboard.writeText(text); alert('Текст заявки скопирован.'); } catch { $('leadPreview').select(); document.execCommand('copy'); alert('Текст заявки скопирован.'); }
+        // ДВС > 3500 cc (Всегда коммерческий)
+        if (hp <= 160) return isNew ? 164.53 : 216.29;
+        if (hp <= 190) return isNew ? 167.28 : 219.48;
+        if (hp <= 220) return isNew ? 170.16 : 222.84;
+        if (hp <= 250) return isNew ? 173.04 : 226.20;
+        if (hp <= 280) return isNew ? 176.52 : 231.36;
+        if (hp <= 310) return isNew ? 180.00 : 236.64;
+        if (hp <= 340) return isNew ? 186.36 : 249.60;
+        if (hp <= 370) return isNew ? 192.88 : 263.40;
+        if (hp <= 400) return isNew ? 199.68 : 277.92;
+        if (hp <= 430) return isNew ? 206.64 : 293.16;
+        if (hp <= 460) return isNew ? 213.84 : 309.36;
+        if (hp <= 500) return isNew ? 221.28 : 326.40;
+        return isNew ? 229.08 : 344.28;
     }
 
     function calculate() {
-      updateAgeDisplay();
-      
-      const pt = $('powertrainType').value;
-      const iceHp = safeNum($('powerIceHp').value);
-      const count = (pt === 'gasoline' || pt === 'diesel') ? 0 : (parseInt($('emCount').value) || 0);
-      
-      let emTotal = 0;
-      for (let i = 1; i <= count; i++) {
-          emTotal += safeNum($(`powerEm${i}`).value);
-      }
-      const em30 = emTotal * 0.45;
-      const calcHp = iceHp + em30;
-      
-      $('power30').value = fmtNum(em30, 1) + ' л.с.';
-      $('powerHp').value = fmtNum(calcHp, 1) + ' л.с.'; 
-      
+      const age = getAge();
+      $('vehicleAge').value = `${age.toFixed(1)} лет`;
+
       const method = $('importMethod').value;
-      const cc = safeNum($('engineCc').value);
-      const hp = calcHp; 
-      
-      const priceRub = amountToRub($('purchasePrice').value, $('purchaseCurrency').value);
-      const customsRub = customsValueRub();
-      const ageYears = vehicleAgeData().years;
-      
-      const duty = dutyResult(customsRub, cc, hp, ageYears, method, pt);
-      const fee = customsFeeByValue(customsRub);
-      
-      const exciseApplicable = (method !== 'personal' || isElectricLike(pt));
-      const exciseRateRub = exciseRate(hp);
-      const exciseRub = exciseApplicable ? exciseRateRub * hp : 0;
-      
-      const vatApplicable = (method !== 'personal' || isElectricLike(pt));
-      const vatRate = vatApplicable ? 20 : 0;
-      const vatBase = priceRub + duty.amount + exciseRub;
-      const vatRub = vatApplicable ? vatBase * vatRate / 100 : 0;
-      
-      const util = utilEstimate(method, pt, ageYears, cc, hp);
-      const exporterRub = safeNum($('exporterFixedRub').value);
-      const bank = bankCommissionRub(priceRub);
-      const toBorder = safeNum($('toBorderRub').value);
-      const insurance = safeNum($('transitInsuranceRub').value);
-      const delivery = safeNum($('deliveryRub').value);
-      const agent = safeNum($('agentRub').value);
-      const border = safeNum($('borderRub').value);
+      const pt = $('powertrainType').value;
+      const cc = parseFloat($('engineCc').value)||0;
+      const hp = parseFloat($('powerIceHp').value)||0;
+      const price = parseFloat($('purchasePrice').value)||0;
+      const cur = $('purchaseCurrency').value;
 
-      const taxesRub = fee + duty.amount + exciseRub + vatRub + util.amount;
-      const bankExporterRub = exporterRub + bank.amount;
-      const opsRub = toBorder + insurance + delivery + agent + border;
-      const totalRub = priceRub + taxesRub + bankExporterRub + opsRub;
+      const priceRub = price * state.rates[cur];
+      const customsValueRub = priceRub + (parseFloat($('toBorderRub').value)||0);
+      const eurValue = customsValueRub / state.rates['EUR'];
 
-      $('customsValueRub').value = fmtRub(customsRub);
-      $('totalRub').textContent = fmtRub(totalRub);
-      $('heroTotal').textContent = fmtRub(totalRub);
-      $('kpiPrice').textContent = fmtRub(priceRub);
-      $('kpiTaxes').textContent = fmtRub(taxesRub);
-      $('kpiBank').textContent = fmtRub(bankExporterRub);
-      $('kpiOps').textContent = fmtRub(opsRub);
+      const feeRub = calcCustomsFee(customsValueRub);
+      let dutyRub = 0, exciseRub = 0, vatRub = 0;
+
+      if (method === 'personal' && pt !== 'electric') {
+        dutyRub = calcPersonalDuty(eurValue, cc, age) * state.rates['EUR'];
+      } else {
+        dutyRub = customsValueRub * (age < 3 ? 0.15 : 0.20);
+        let exRate = 0;
+        if (hp > 90 && hp <= 150) exRate = 68;
+        else if (hp <= 200) exRate = 636;
+        else if (hp <= 300) exRate = 1044;
+        else if (hp <= 400) exRate = 1784;
+        else if (hp <= 500) exRate = 1845;
+        else if (hp > 500) exRate = 1900;
+        exciseRub = hp * exRate;
+        vatRub = (customsValueRub + dutyRub + exciseRub) * 0.20;
+      }
+
+      // Подключаем новую матрицу утильсбора
+      const coeff = getUtilMatrixCoeff(method, pt, cc, hp, age);
+      const utilRub = 20000 * coeff;
       
-      $('summaryMethod').textContent = `Методика: ${methodLabel()}`;
-      $('heroMethod').textContent = `Методика: ${methodLabel()}`;
-      $('dutyChip').textContent = `Пошлина: ${duty.ruleShort}`;
-      $('vatChip').textContent = `НДС: ${vatApplicable ? `20%` : 'нет'}`;
-      $('exciseChip').textContent = `Акциз: ${exciseApplicable ? `${fmtNum(exciseRateRub,0)} ₽` : 'нет'}`;
-      $('utilChip').textContent = `Утиль: К ${fmtNum(util.coeff, 2)}`;
+      let utilNote = (coeff === 0.17 || coeff === 0.26) 
+          ? `Льготный (${Math.round(utilRub).toLocaleString('ru-RU')} ₽)` 
+          : `По сетке 2026 (К=${coeff})`;
+      $('utilChip').textContent = `Утиль: ${utilNote}`;
 
-      $('dutyMeta').textContent = fmtRub(duty.amount);
-      $('vatMeta').textContent = fmtRub(vatRub);
-      $('exciseMeta').textContent = fmtRub(exciseRub);
-      $('utilMeta').textContent = fmtRub(util.amount);
+      const bankRub = priceRub * ((parseFloat($('bankManualPercent').value)||0)/100);
+      const exportRub = parseFloat($('exporterFixedRub').value)||0;
+      const deliveryRub = parseFloat($('deliveryRub').value)||0;
+      const agentRub = parseFloat($('agentRub').value)||0;
 
-      $('dutyRuleText').textContent = duty.ruleLong;
-      $('vatRuleText').textContent = vatApplicable ? `Ставка 20%. База: цена + пошлина + акциз.` : 'НДС не применяется (ЕТП).';
-      $('exciseRuleText').textContent = exciseApplicable ? `Ставка ${fmtNum(exciseRateRub,0)} ₽ за 1 л.с. × ${fmtNum(hp,1)} л.с.` : 'Акциз не применяется (ЕТП).';
-      $('utilRuleText').textContent = util.note;
+      const taxesRub = feeRub + dutyRub + exciseRub + vatRub + utilRub;
+      const totalRub = priceRub + taxesRub + bankRub + exportRub + deliveryRub + agentRub;
+
+      const fmt = (v) => `${Math.round(v).toLocaleString('ru-RU')} ₽`;
+      $('heroTotal').textContent = fmt(totalRub);
+      $('totalRub').textContent = fmt(totalRub);
+      $('summaryMethod').textContent = method === 'personal' ? "Физ. Лицо" : "Юр. Лицо";
+      
+      $('kpiPrice').textContent = fmt(priceRub);
+      $('kpiTaxes').textContent = fmt(taxesRub);
+      $('kpiBank').textContent = fmt(exportRub + bankRub);
+      $('kpiOps').textContent = fmt(deliveryRub + agentRub);
 
       const rows = [
-        ['Цена автомобиля', priceRub],
-        [`Комиссия экспортёра`, exporterRub],
-        [`Комиссия банка`, bank.amount],
-        ['Таможенный сбор', fee],
-        ['Таможенная пошлина', duty.amount],
-        ['Акциз', exciseRub],
-        ['НДС (20%)', vatRub],
-        ['Утилизационный сбор', util.amount],
-        ['Расходы до границы', toBorder],
-        ['Страховка на перегон', insurance],
-        ['Стоимость перегона', delivery],
-        ['Комиссия агента', agent],
-        ['Оформление на границе', border],
+        ['Цена авто', priceRub], ['Комиссия банка', bankRub], ['Сбор за оформление', feeRub],
+        ['Таможенная пошлина', dutyRub], ['Акциз', exciseRub], ['НДС (20%)', vatRub],
+        ['Утильсбор', utilRub], ['Экспортер', exportRub], ['Перегон + Брокер', deliveryRub + agentRub]
       ];
-      
-      const tbody = $('breakdownBody');
-      tbody.innerHTML = rows.filter(r => r[1] > 0).map(([name, value]) => `<tr><td>${escapeHtml(name)}</td><td class="mono">${fmtRub(value)}</td></tr>`).join('') + `<tr class="total-row"><td>Итого под ключ</td><td class="mono">${fmtRub(totalRub)}</td></tr>`;
-      
-      $('calculationNote').textContent = util.exact ? 'Льготный утильсбор рассчитан автоматически для физлиц.' : 'Применена коммерческая матрица расчета утильсбора (с учетом мощности и объема).';
-      buildLeadPreview();
-      return { totalRub, taxesRub };
+      $('breakdownBody').innerHTML = rows.filter(r=>r[1]>0).map(r=>`<tr><td>${r[0]}</td><td class="mono">${fmt(r[1])}</td></tr>`).join('');
     }
 
-    function methodLabel() { return $('importMethod').value === 'personal' ? 'ФЛ — для себя' : 'Перепродажа / ЮЛ'; }
-
-    function attachEvents() {
-      FIELD_IDS.forEach(id => {
-        const el = $(id);
-        if (!el) return;
-        el.addEventListener('input', () => {
-          if (id === 'releaseYear' || id === 'releaseMonth') updateAgeDisplay();
-          scheduleDraftSave();
-          calculate();
-        });
-        el.addEventListener('change', () => {
-          if (id === 'powertrainType' || id === 'emCount') updateMotorVisibility();
-          scheduleDraftSave();
-          calculate();
-        });
-      });
-
-      $('recalcBtn').onclick = calculate;
-      $('recalcTop').onclick = calculate;
-      $('printBtn').onclick = () => window.print();
-      $('printTop').onclick = () => window.print();
-      $('refreshRates').onclick = refreshRates;
-      $('refreshRatesTop').onclick = refreshRates;
-      $('saveRates').onclick = () => { state.rateDate = nowStamp(); saveRatesToStorage('ручные значения'); renderRates(); };
-      $('saveScenarioBtn').onclick = saveScenario;
-      $('saveTop').onclick = saveScenario;
-      $('buildLeadBtn').onclick = sendDataToBot; // ИЗМЕНЕНО: привязка к Mini App
-      $('copyLeadBtn').onclick = copyLeadPreview;
-    }
-
-    function initDefaults() {
-      fillMonths();
-      loadRates();
+    document.addEventListener('DOMContentLoaded', () => {
+      try { if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.expand(); } catch(e){}
+      
+      initSelects();
       renderRates();
-      const now = new Date();
-      $('releaseMonth').value = String(Math.max(1, now.getMonth()));
-      initCarSelects();
-    }
+      calculate();
 
-    // --- МОСТ ДЛЯ TELEGRAM MINI APP ---
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+      ['purchasePrice','releaseYear','engineCc','powerIceHp','toBorderRub','bankManualPercent','deliveryRub','agentRub'].forEach(id => {
+        $(id).addEventListener('input', calculate);
+      });
+      ['purchaseCurrency','importMethod','powertrainType'].forEach(id => {
+        $(id).addEventListener('change', calculate);
+      });
+      $('recalcBtn').onclick = calculate;
+      $('refreshRates').onclick = refreshRates;
 
-    async function sendDataToBot() {
-      const dataToSend = {
-        car_name: $('carName').value,
-        total_price: $('totalRub').textContent,
-        details: {
-          price: $('kpiPrice').textContent,
-          taxes: $('kpiTaxes').textContent,
-          method: methodLabel()
+      $('buildLeadBtn').onclick = () => {
+        const data = {
+          car_name: $('carName').value,
+          total_price: $('totalRub').textContent,
+          client_name: $('leadName').value,
+          client_phone: $('leadContact').value
+        };
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.sendData) {
+            window.Telegram.WebApp.sendData(JSON.stringify(data));
+        } else {
+            alert("Telegram WebApp не обнаружен. Расчет: " + JSON.stringify(data));
         }
       };
-      tg.sendData(JSON.stringify(dataToSend));
-    }
-
-    initDefaults();
-    attachEvents();
-    restoreDraft();
-    renderSavedScenarios();
-    updateAgeDisplay();
-    updateMotorVisibility();
-    calculate();
-    setTimeout(refreshRates, 500);
+    });
   </script>
 </body>
 </html>
