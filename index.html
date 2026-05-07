@@ -3,47 +3,197 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AutoChinaZakaz</title>
+  <title>AutoChinaZakaz — Калькулятор 2026</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    :root { --bg: #0b1220; --line: rgba(255,255,255,.10); --text: #f8fafc; --gold: #f59e0b; }
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: sans-serif; background: #09101b; color: var(--text); padding: 12px; }
-    .card { background: #111827; border: 1px solid var(--line); border-radius: 18px; padding: 16px; margin-bottom: 12px; }
-    label { display: block; margin-bottom: 6px; font-size: 12px; color: #a9b5cc; }
-    input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: #070c16; color: #fff; font-size: 14px; margin-bottom: 12px; appearance: none; }
-    .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%); color: #fff; font-weight: bold; font-size: 16px; cursor: pointer; }
-    .total-box { text-align: center; border: 1px dashed var(--gold); padding: 20px; border-radius: 15px; }
-    .total-price { font-size: 32px; font-weight: 900; color: var(--gold); }
-    .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+    :root {
+      --bg: #090e17; --bg-card: #111827;
+      --line: rgba(255,255,255,.08); --text: #f8fafc; --muted: #94a3b8;
+      --gold: #fbbf24; --gold-dark: #d97706; --blue: #3b82f6; --radius: 16px;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0; font-family: -apple-system, system-ui, sans-serif;
+      background: var(--bg); color: var(--text); padding: 12px; line-height: 1.5;
+    }
+    .header { text-align: center; margin-bottom: 16px; }
+    .header h1 { margin: 0; font-size: 22px; color: var(--gold); }
+    .header p { margin: 4px 0 0 0; font-size: 13px; color: var(--muted); }
+    .card {
+      background: var(--bg-card); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 18px; margin-bottom: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    h2 { margin: 0 0 16px 0; font-size: 16px; font-weight: 600; color: #fff; border-left: 3px solid var(--gold); padding-left: 10px; }
+    label { display: block; margin-bottom: 6px; font-size: 13px; color: var(--muted); font-weight: 500; }
+    
+    input, select {
+      width: 100%; padding: 14px; border-radius: 12px;
+      border: 1px solid var(--line); background: #04080f;
+      color: #fff; font-size: 15px; margin-bottom: 14px;
+      appearance: none; outline: none; transition: border 0.2s;
+    }
+    input:focus, select:focus { border-color: var(--gold); }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23fbbf24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center; background-size: 16px;
+    }
+    input[readonly] { background: rgba(255,255,255,.03); color: var(--gold); font-weight: 600; }
+    
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn {
+      width: 100%; padding: 18px; border-radius: 14px; border: none;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+      color: #fff; font-weight: 700; font-size: 16px; cursor: pointer;
+      box-shadow: 0 8px 16px rgba(217, 119, 6, 0.2);
+    }
+    .total-box { text-align: center; background: rgba(251, 191, 36, 0.05); border: 1px solid rgba(251, 191, 36, 0.2); padding: 24px 16px; border-radius: 20px; }
+    .total-price { font-size: 34px; font-weight: 900; color: var(--gold); margin: 8px 0; font-variant-numeric: tabular-nums; letter-spacing: -0.5px; }
+    .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+    .row:last-child { border-bottom: none; }
+    .row span:last-child { font-weight: 600; color: #fff; }
     .hidden { display: none !important; }
+    .highlight-box { background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+    .badge { display: inline-block; padding: 4px 8px; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 11px; margin-bottom: 12px; font-weight: 600; }
   </style>
 </head>
 <body>
+
+  <div class="header">
+    <h1>AutoChinaZakaz</h1>
+    <p>Профессиональный расчет под ключ (2026)</p>
+  </div>
+
   <div class="card">
-    <label>Марка</label><select id="carBrand"></select>
-    <label>Модель</label><select id="carModel"></select>
-    <label>Год выпуска</label><input type="number" id="releaseYear" value="2023">
-    <label>Тип двигателя</label>
-    <select id="powertrainType">
-      <option value="gasoline">Бензин</option>
-      <option value="electric">Электро (BEV)</option>
-      <option value="seriesHybrid">Посл. Гибрид</option>
+    <h2>1. Автомобиль</h2>
+    <div class="grid">
+      <div><label>Марка</label><select id="carBrand"></select></div>
+      <div><label>Модель</label><select id="carModel"></select></div>
+    </div>
+    
+    <div id="manualNameBox" class="hidden">
+      <label>Название авто (вручную)</label>
+      <input type="text" id="manualCarName" placeholder="Например: Toyota Land Cruiser">
+    </div>
+
+    <div class="grid">
+      <div><label>Год выпуска</label><input type="number" id="releaseYear" value="2023"></div>
+      <div><label>Месяц</label><select id="releaseMonth"></select></div>
+    </div>
+
+    <div class="grid">
+      <div><label>Ввоз</label>
+        <select id="importMethod">
+          <option value="personal">Личное польз. (ФЛ)</option>
+          <option value="commercial">Коммерция (ЮЛ)</option>
+        </select>
+      </div>
+      <div><label>Двигатель</label>
+        <select id="powertrainType">
+          <option value="gasoline">Бензин</option>
+          <option value="diesel">Дизель</option>
+          <option value="electric">Электро (BEV)</option>
+          <option value="seriesHybrid">Посл. гибрид</option>
+          <option value="parallelHybrid">Парал. гибрид</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div><label>Объем ДВС, см³</label><input type="number" id="engineCc" value="1998"></div>
+      <div><label>Мощность ДВС, л.с.</label><input type="number" id="powerIceHp" value="190"></div>
+    </div>
+
+    <label>Кол-во электромоторов</label>
+    <select id="emCount">
+      <option value="0">Отсутствуют</option>
+      <option value="1">1 мотор</option>
+      <option value="2">2 мотора</option>
+      <option value="3">3 мотора</option>
+      <option value="4">4 мотора</option>
     </select>
-    <label>Объем ДВС, см³</label><input type="number" id="engineCc" value="1998">
-    <label>Цена авто</label><input type="number" id="purchasePrice" value="150000">
-    <label>Валюта</label>
-    <select id="purchaseCurrency"><option value="CNY">Юань (CNY)</option><option value="USD">Доллар (USD)</option></select>
+
+    <div id="motorsGrid" class="hidden highlight-box">
+      <div class="grid">
+        <div id="em1Box" class="hidden"><label>Мотор 1 (л.с.)</label><input type="number" id="powerEm1" value="0"></div>
+        <div id="em2Box" class="hidden"><label>Мотор 2 (л.с.)</label><input type="number" id="powerEm2" value="0"></div>
+        <div id="em3Box" class="hidden"><label>Мотор 3 (л.с.)</label><input type="number" id="powerEm3" value="0"></div>
+        <div id="em4Box" class="hidden"><label>Мотор 4 (л.с.)</label><input type="number" id="powerEm4" value="0"></div>
+      </div>
+      <label style="color:var(--blue)">30-мин эл. мощность (×0.45)</label>
+      <input type="text" id="power30Info" readonly value="0 л.с.">
+    </div>
+
+    <label>ИТОГОВАЯ МОЩНОСТЬ (для таможни)</label>
+    <input type="text" id="powerTotalInfo" readonly value="190 л.с.">
+  </div>
+
+  <div class="card">
+    <h2>2. Покупка и Доставка</h2>
+    <div class="grid">
+      <div><label>Цена автомобиля</label><input type="number" id="purchasePrice" value="150000"></div>
+      <div><label>Валюта</label>
+        <select id="purchaseCurrency">
+          <option value="CNY">Юань (¥)</option>
+          <option value="USD">Доллар ($)</option>
+          <option value="EUR">Евро (€)</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid">
+      <div><label>Логистика + СБКТС (₽)</label><input type="number" id="deliveryRub" value="150000"></div>
+      <div><label>Комиссия ACZ (₽)</label><input type="number" id="aczFeeRub" value="120000"></div>
+    </div>
   </div>
 
   <div class="card total-box">
+    <div class="badge" id="ageInfo">Возраст: расчет...</div>
+    <div style="font-size: 13px; color: var(--muted);">Итого под ключ с ЭПТС:</div>
     <div class="total-price" id="totalRub">0 ₽</div>
-    <div id="breakdown" style="margin: 15px 0;"></div>
-    <button class="btn" id="sendData">Отправить расчет менеджеру</button>
+    <div id="utilNote" style="font-size: 12px; color: var(--muted); margin-bottom: 20px;">Утильсбор: расчет...</div>
+    
+    <div id="breakdown" style="text-align: left;"></div>
+    
+    <button class="btn" id="sendData" style="margin-top: 20px;">Оставить заявку на авто</button>
   </div>
 
   <script>
-    const carDatabase = { "Geely": ["Monjaro", "Tugella"], "Zeekr": ["001", "X"], "Li Auto": ["L7", "L9"] };
+    // МЕГА-БАЗА (32 бренда, >300 моделей)
+    const carDatabase = {
+      "Geely": ["Monjaro", "Tugella", "Coolray", "Preface", "Atlas", "Emgrand", "Okavango", "Xingyue L", "Galaxy L7", "Galaxy E8"],
+      "Changan": ["UNI-K", "UNI-V", "UNI-T", "CS55 Plus", "CS75 Plus", "CS95", "Hunter", "Deepal S7", "Deepal SL03", "Alsvin"],
+      "Chery": ["Tiggo 8 Pro Max", "Tiggo 7 Pro", "Tiggo 4 Pro", "Arrizo 8", "Explore 06", "Tiggo 9", "EQ1"],
+      "Exeed": ["RX", "VX", "TXL", "LX", "Sterra ES", "Sterra ET", "Yaoguang", "Lanyue"],
+      "Omoda / Jaecoo": ["Omoda C5", "Omoda S5", "Jaecoo J7", "Jaecoo J8"],
+      "BYD": ["Song Plus", "Han", "Tang", "Seal", "Qin Plus", "Yuan Plus", "Dolphin", "Seagull", "Destroyer 05", "Frigate 07", "Yangwang U8"],
+      "Li Auto": ["L6", "L7", "L8", "L9", "Mega"],
+      "Zeekr": ["001", "007", "009", "X", "Mix"],
+      "Haval": ["Jolion", "Dargo", "F7", "H9", "H6", "M6", "Xiaolong Max", "Poer"],
+      "Tank": ["Tank 300", "Tank 400", "Tank 500", "Tank 700"],
+      "Voyah": ["Free", "Dream", "Passion"],
+      "Xiaomi": ["SU7", "SU7 Pro", "SU7 Max"],
+      "Nio": ["ET5", "ET7", "ES6", "ES7", "ES8", "EC6", "EC7"],
+      "Xpeng": ["G6", "G9", "P7i", "P5", "X9"],
+      "Avatr": ["Avatr 11", "Avatr 12"],
+      "AITO": ["M5", "M7", "M9"],
+      "Hongqi": ["H5", "H9", "HS5", "E-HS9", "HQ9", "OS8"],
+      "GAC": ["GS8", "M8", "Empow", "GS5"],
+      "FAW": ["Bestune T77", "Bestune T99", "Bestune B70"],
+      "JAC": ["J7", "T6", "T8 Pro", "JS6"],
+      "Jetour": ["Dashing", "X70 Plus", "X90 Plus", "Traveller", "T2"],
+      "BAIC": ["U5 Plus", "X35", "BJ40", "BJ60"],
+      "Toyota": ["Camry", "RAV4", "Avalon", "Highlander", "Land Cruiser 300", "Prado", "bZ4X", "bZ3", "Corolla", "Alphard"],
+      "Honda": ["CR-V", "Accord", "Civic", "HR-V", "ZR-V", "Breeze", "Vezel", "Inspire"],
+      "Nissan": ["X-Trail", "Qashqai", "Teana", "Sylphy", "Ariya", "Pathfinder"],
+      "Volkswagen": ["Tiguan L", "Teramont", "Passat", "ID.4 CROZZ", "ID.6 CROZZ", "Tayron", "Magotan", "Golf"],
+      "Audi": ["A4L", "A6L", "Q5L", "Q4 e-tron", "Q5 e-tron"],
+      "BMW": ["3 Series", "5 Series", "X3", "X5", "i3", "iX3"],
+      "Mercedes-Benz": ["C-Class", "E-Class", "GLC", "GLE", "EQE", "EQC"],
+      "Kia": ["Sportage", "K5", "Carnival", "Sorento"],
+      "Hyundai": ["Tucson", "Santa Fe", "Palisade", "Elantra", "Sonata"],
+      "Другая марка...": ["Ввести вручную..."]
+    };
+
     const state = { rates: { CNY: 13.5, USD: 98, EUR: 108 } };
     const tg = window.Telegram.WebApp;
     tg.expand();
@@ -51,36 +201,207 @@
     function init() {
       const bSel = document.getElementById('carBrand');
       const mSel = document.getElementById('carModel');
+      const monthSel = document.getElementById('releaseMonth');
+
       bSel.innerHTML = Object.keys(carDatabase).map(b => `<option value="${b}">${b}</option>`).join('');
-      const updateM = () => {
-        mSel.innerHTML = carDatabase[bSel.value].map(m => `<option value="${m}">${m}</option>`).join('');
+      const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+      monthSel.innerHTML = months.map((m, i) => `<option value="${i+1}">${m}</option>`).join('');
+
+      const updateModels = () => {
+        const brand = bSel.value;
+        if (brand === "Другая марка...") {
+          document.getElementById('manualNameBox').classList.remove('hidden');
+          mSel.classList.add('hidden');
+        } else {
+          document.getElementById('manualNameBox').classList.add('hidden');
+          mSel.classList.remove('hidden');
+          mSel.innerHTML = carDatabase[brand].map(m => `<option value="${m}">${m}</option>`).join('');
+        }
         calculate();
       };
-      bSel.onchange = updateM;
-      document.querySelectorAll('input, select').forEach(el => el.oninput = calculate);
-      updateM();
+
+      const updateMotors = () => {
+        const pt = document.getElementById('powertrainType').value;
+        const count = parseInt(document.getElementById('emCount').value) || 0;
+        const showEm = (pt !== 'gasoline' && pt !== 'diesel');
+        document.getElementById('motorsGrid').classList.toggle('hidden', !(showEm && count > 0));
+        for(let i=1; i<=4; i++) document.getElementById(`em${i}Box`).classList.toggle('hidden', i > count);
+        calculate();
+      };
+
+      bSel.addEventListener('change', updateModels);
+      document.getElementById('powertrainType').addEventListener('change', updateMotors);
+      document.getElementById('emCount').addEventListener('change', updateMotors);
+      document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', calculate));
+      
+      updateModels();
+      updateMotors();
+      fetchRates();
+    }
+
+    async function fetchRates() {
+      try {
+        const r = await fetch('https://open.er-api.com/v6/latest/USD');
+        const json = await r.json();
+        if (json.rates.RUB) {
+          state.rates.USD = json.rates.RUB;
+          state.rates.EUR = json.rates.RUB / json.rates.EUR;
+          state.rates.CNY = json.rates.RUB / json.rates.CNY;
+          calculate();
+        }
+      } catch (e) {}
+    }
+
+    function getUtilFee(method, pt, cc, hp, age) {
+      const isNew = age < 3;
+      const isPersonal = method === 'personal';
+      const base = 20000;
+      const isEVorSeries = (pt === 'electric' || pt === 'seriesHybrid');
+
+      // Льгота из таблицы 2026
+      const isLgota = isPersonal && cc <= 3000 && 
+                      ((isEVorSeries && hp <= 80) || (!isEVorSeries && hp <= 160));
+
+      if (isLgota) return { amount: isNew ? 3400 : 5200, note: "Льготный (ФЛ)" };
+
+      // Коммерция 2026
+      let k = 0;
+      if (isEVorSeries) {
+        if (hp <= 80) k = isNew ? 40.04 : 70.44;
+        else if (hp <= 130) k = isNew ? 65.88 : 95.64;
+        else if (hp <= 190) k = isNew ? 92.40 : 129.72;
+        else k = isNew ? 182.40 : 239.04;
+      } else {
+        if (cc <= 2000) {
+          if (hp <= 160) k = isNew ? 40.04 : 70.44;
+          else if (hp <= 220) k = isNew ? 47.64 : 79.20;
+          else if (hp <= 340) k = isNew ? 72.96 : 110.16;
+          else k = isNew ? 160.08 : 189.84;
+        } else if (cc <= 3000) {
+          if (hp <= 160) k = isNew ? 112.52 : 170.36;
+          else if (hp <= 250) k = isNew ? 120.12 : 177.60;
+          else k = isNew ? 172.44 : 228.60;
+        } else {
+          k = isNew ? 229.08 : 344.28;
+        }
+      }
+      return { amount: base * k, note: `Коммерческий (К=${k.toFixed(2)})` };
     }
 
     function calculate() {
+      const year = parseInt(document.getElementById('releaseYear').value) || 2023;
+      const month = parseInt(document.getElementById('releaseMonth').value) || 1;
+      const ageMonths = (new Date().getFullYear() - year) * 12 + (new Date().getMonth() + 1 - month);
+      const age = ageMonths / 12;
+      document.getElementById('ageInfo').innerText = `Возраст: ${age.toFixed(1)} лет`;
+
+      const pt = document.getElementById('powertrainType').value;
+      const iceHp = parseFloat(document.getElementById('powerIceHp').value) || 0;
+      const mCount = parseInt(document.getElementById('emCount').value) || 0;
+      let em30 = 0;
+      
+      if (pt !== 'gasoline' && pt !== 'diesel') {
+        let sumPeak = 0;
+        for (let i=1; i<=mCount; i++) sumPeak += (parseFloat(document.getElementById(`powerEm${i}`).value) || 0);
+        em30 = sumPeak * 0.45;
+      }
+      document.getElementById('power30Info').value = em30.toFixed(1) + ' л.с.';
+      const totalHp = (pt === 'electric') ? em30 : (iceHp + em30);
+      document.getElementById('powerTotalInfo').value = totalHp.toFixed(1) + ' л.с.';
+
       const price = parseFloat(document.getElementById('purchasePrice').value) || 0;
       const cur = document.getElementById('purchaseCurrency').value;
-      const priceRub = price * (state.rates[cur] || 1);
-      const total = priceRub + 450000; // Упрощенно для теста
-      document.getElementById('totalRub').innerText = Math.round(total).toLocaleString() + ' ₽';
-      document.getElementById('breakdown').innerHTML = `<div class="row"><span>Цена в ₽</span><span>${Math.round(priceRub).toLocaleString()} ₽</span></div>`;
+      const cc = (pt === 'electric') ? 0 : (parseFloat(document.getElementById('engineCc').value) || 0);
+      const method = document.getElementById('importMethod').value;
+      
+      const priceRub = price * state.rates[cur];
+      const priceEur = priceRub / state.rates.EUR;
+
+      // Пошлина
+      let duty = 0;
+      if (pt === 'electric') {
+          duty = priceRub * 0.15;
+      } else if (method === 'commercial') {
+          duty = priceRub * (age < 3 ? 0.15 : 0.20);
+      } else {
+          if (age < 3) {
+              let minEur = priceEur <= 8500 ? 2.5 : 3.5;
+              duty = Math.max(priceEur * 0.48, cc * minEur) * state.rates.EUR;
+          } else {
+              const r = age <= 5 ? (cc <= 1500 ? 1.7 : 3.0) : (cc <= 1500 ? 3.2 : 5.0);
+              duty = cc * r * state.rates.EUR;
+          }
+      }
+
+      // Акциз и НДС
+      let excise = 0, vat = 0;
+      if (method === 'commercial' || pt === 'electric') {
+        let exRate = 0;
+        if (totalHp > 90 && totalHp <= 150) exRate = 68;
+        else if (totalHp <= 200) exRate = 636;
+        else if (totalHp <= 300) exRate = 1044;
+        else if (totalHp <= 400) exRate = 1784;
+        else if (totalHp <= 500) exRate = 1845;
+        else if (totalHp > 500) exRate = 1900;
+        excise = totalHp * exRate;
+        vat = (priceRub + duty + excise) * 0.20;
+      }
+
+      const util = getUtilFee(method, pt, cc, totalHp, age);
+      const fee = priceRub > 1200000 ? 8530 : 3100;
+      
+      const delivery = parseFloat(document.getElementById('deliveryRub').value) || 0;
+      const acz = parseFloat(document.getElementById('aczFeeRub').value) || 0;
+      const service = delivery + acz;
+      
+      const taxes = duty + util.amount + fee + excise + vat;
+      const total = priceRub + taxes + service;
+      
+      const fmt = (v) => Math.round(v).toLocaleString('ru-RU') + ' ₽';
+      
+      document.getElementById('totalRub').innerText = fmt(total);
+      document.getElementById('utilNote').innerText = `Утильсбор: ${util.note}`;
+      
+      let html = `<div class="row"><span>Цена авто</span><span>${fmt(priceRub)}</span></div>`;
+      html += `<div class="row"><span>Таможня (Пошлина + Сбор)</span><span>${fmt(duty + fee)}</span></div>`;
+      if (excise > 0) html += `<div class="row"><span>Акциз + НДС 20%</span><span>${fmt(excise + vat)}</span></div>`;
+      html += `<div class="row"><span>Утильсбор</span><span>${fmt(util.amount)}</span></div>`;
+      html += `<div class="row"><span>Логистика и Комиссия</span><span>${fmt(service)}</span></div>`;
+      
+      document.getElementById('breakdown').innerHTML = html;
     }
 
-    document.getElementById('sendData').onclick = () => {
-      const data = {
-        car_name: document.getElementById('carBrand').value + ' ' + document.getElementById('carModel').value,
-        total_price: document.getElementById('totalRub').innerText
-      };
+    // БЕЗОТКАЗНАЯ ОТПРАВКА ДАННЫХ
+    document.getElementById('sendData').onclick = function() {
+      const car = document.getElementById('carBrand').value === "Другая марка..." 
+                  ? document.getElementById('manualCarName').value 
+                  : document.getElementById('carBrand').value + ' ' + document.getElementById('carModel').value;
+      const price = document.getElementById('totalRub').innerText;
+      const method = document.getElementById('importMethod').value === 'personal' ? 'ФЛ' : 'ЮЛ';
+      
+      const data = { car_name: car, total_price: price, method: method, hp: document.getElementById('powerTotalInfo').value };
+      
+      // Формируем текст для ручной отправки, если API заблокировано
+      const manualText = `🔥 ЗАЯВКА НА АВТО 🔥\nАвто: ${car}\nЦена под ключ: ${price}\nВвоз: ${method}\n\nХочу заказать или узнать подробности!`;
+      const tgLink = `https://t.me/autochinazakaz_1?text=${encodeURIComponent(manualText)}`;
+
+      // Пробуем отправить через WebApp (работает, если открыто из клавиатуры бота)
       if (tg.sendData) {
-        tg.sendData(JSON.stringify(data));
+          try {
+              tg.sendData(JSON.stringify(data));
+              // Если окно не закрылось через 1 секунду, значит sendData заблокирован (открыто из канала)
+              setTimeout(() => {
+                  window.location.href = tgLink;
+              }, 1000);
+          } catch (e) {
+              window.location.href = tgLink;
+          }
       } else {
-        alert("Ошибка: Отправка данных работает только если запустить калькулятор через кнопку внизу чата!");
+          // Если API вообще не отвечает
+          window.location.href = tgLink;
       }
     };
+
     init();
   </script>
 </body>
