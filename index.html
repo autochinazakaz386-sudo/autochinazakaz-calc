@@ -1,15 +1,15 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AutoChinaZakaz — Full Pro Calculator</title>
+  <title>AutoChinaZakaz — Калькулятор 2026</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
       --bg: #0b1220; --bg2: #111827;
       --line: rgba(255,255,255,.10); --text: #f8fafc; --muted: #a9b5cc;
-      --gold: #f59e0b; --blue: #60a5fa; --red: #e11d48; --radius: 18px;
+      --gold: #f59e0b; --blue: #60a5fa; --radius: 18px;
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
@@ -23,7 +23,6 @@
     h2 { margin: 0 0 15px 0; font-size: 16px; color: var(--gold); border-left: 3px solid var(--gold); padding-left: 10px; }
     label { display: block; margin-bottom: 6px; font-size: 12px; color: var(--muted); }
     
-    /* СТИЛИ ДЛЯ TELEGRAM DESKTOP */
     input, select {
       width: 100%; padding: 12px; border-radius: 12px;
       border: 1px solid var(--line); background: #070c16;
@@ -60,8 +59,8 @@
     </div>
     
     <div id="manualNameBox" class="hidden">
-      <label>Своя марка/модель</label>
-      <input type="text" id="manualCarName" placeholder="Например: Toyota Prius">
+      <label>Название авто (вручную)</label>
+      <input type="text" id="manualCarName" placeholder="Например: Toyota Land Cruiser">
     </div>
 
     <div class="grid">
@@ -72,7 +71,7 @@
     <div class="grid">
       <div><label>Цель ввоза</label>
         <select id="importMethod">
-          <option value="personal">Личное пользование (ФЛ)</option>
+          <option value="personal">Для личного пользования (ФЛ)</option>
           <option value="commercial">Коммерция / Юр. лицо</option>
         </select>
       </div>
@@ -81,8 +80,8 @@
           <option value="gasoline">Бензин</option>
           <option value="diesel">Дизель</option>
           <option value="electric">Электро (BEV)</option>
-          <option value="seriesHybrid">Послед. Гибрид</option>
-          <option value="parallelHybrid">Параллел. Гибрид</option>
+          <option value="seriesHybrid">Последовательный гибрид</option>
+          <option value="parallelHybrid">Параллельный гибрид</option>
         </select>
       </div>
     </div>
@@ -103,40 +102,36 @@
 
     <div id="motorsGrid" class="hidden highlight-box">
       <div class="grid">
-        <div id="em1Box" class="hidden"><label>Мотор 1 (пик л.с.)</label><input type="number" id="powerEm1" value="0"></div>
-        <div id="em2Box" class="hidden"><label>Мотор 2 (пик л.с.)</label><input type="number" id="powerEm2" value="0"></div>
-        <div id="em3Box" class="hidden"><label>Мотор 3 (пик л.с.)</label><input type="number" id="powerEm3" value="0"></div>
-        <div id="em4Box" class="hidden"><label>Мотор 4 (пик л.с.)</label><input type="number" id="powerEm4" value="0"></div>
+        <div id="em1Box" class="hidden"><label>Мотор 1 (л.с.)</label><input type="number" id="powerEm1" value="0"></div>
+        <div id="em2Box" class="hidden"><label>Мотор 2 (л.с.)</label><input type="number" id="powerEm2" value="0"></div>
+        <div id="em3Box" class="hidden"><label>Мотор 3 (л.с.)</label><input type="number" id="powerEm3" value="0"></div>
+        <div id="em4Box" class="hidden"><label>Мотор 4 (л.с.)</label><input type="number" id="powerEm4" value="0"></div>
       </div>
       <label>30-мин эл. мощность (×0.45)</label>
       <input type="text" id="power30Info" readonly value="0 л.с.">
     </div>
 
-    <label>ИТОГОВАЯ МОЩНОСТЬ (ДВС + Электро)</label>
+    <label>ИТОГОВАЯ МОЩНОСТЬ (для расчета)</label>
     <input type="text" id="powerTotalInfo" readonly value="190 л.с.">
   </div>
 
   <div class="card">
-    <h2>2. Цена и расходы</h2>
+    <h2>2. Стоимость</h2>
     <div class="grid">
       <div><label>Цена авто</label><input type="number" id="purchasePrice" value="150000"></div>
       <div><label>Валюта</label>
         <select id="purchaseCurrency">
-          <option value="CNY">Юань (CNY)</option>
+          <option value="CNY">Китайский юань (CNY)</option>
           <option value="USD">Доллар (USD)</option>
           <option value="EUR">Евро (EUR)</option>
         </select>
       </div>
     </div>
-    <div class="grid">
-      <div><label>Перегон + СБКТС (₽)</label><input type="number" id="deliveryRub" value="150000"></div>
-      <div><label>Комиссия ACZ (₽)</label><input type="number" id="aczFeeRub" value="120000"></div>
-    </div>
   </div>
 
   <div class="card total-box">
     <div id="ageInfo" style="font-size: 11px; color: var(--muted); margin-bottom: 5px;">Возраст: расчет...</div>
-    <div class="muted" style="font-size: 12px;">Итого под ключ в РФ:</div>
+    <div class="muted" style="font-size: 12px;">Итого под ключ в Уссурийске:</div>
     <div class="total-price" id="totalRub">0 ₽</div>
     <div id="utilNote" style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">Утильсбор: расчет...</div>
     
@@ -148,18 +143,19 @@
   <script>
     const carDatabase = {
       "Geely": ["Monjaro", "Tugella", "Coolray", "Preface", "Atlas", "Galaxy L7"],
-      "Changan": ["UNI-K", "UNI-V", "UNI-T", "CS55 Plus", "Hunter", "Deepal"],
-      "Li Auto (Lixiang)": ["L6", "L7", "L8", "L9", "Mega"],
+      "Changan": ["UNI-K", "UNI-V", "UNI-T", "CS55 Plus", "Hunter", "Deepal S7"],
+      "Li Auto": ["L6", "L7", "L8", "L9", "Mega"],
       "Zeekr": ["001", "007", "009", "X"],
       "BYD": ["Song Plus", "Han", "Tang", "Seal", "Qin Plus"],
       "Voyah": ["Free", "Dream", "Passion"],
-      "Xiaomi": ["SU7 RWD", "SU7 Max AWD"],
-      "Toyota (China)": ["Camry", "RAV4", "Avalon", "Highlander"],
+      "Xiaomi": ["SU7"],
+      "Toyota": ["Camry", "RAV4", "Avalon", "Highlander"],
       "Другая марка...": ["Ввести вручную..."]
     };
 
-    const state = { rates: { CNY: 13.5, USD: 98.0, EUR: 108.2 } };
+    const state = { rates: { CNY: 13.5, USD: 98, EUR: 108 } };
     const tg = window.Telegram.WebApp;
+    tg.expand();
 
     function init() {
       const brandSel = document.getElementById('carBrand');
@@ -172,12 +168,11 @@
 
       const updateModels = () => {
         const brand = brandSel.value;
-        const manualBox = document.getElementById('manualNameBox');
         if (brand === "Другая марка...") {
-          manualBox.classList.remove('hidden');
+          document.getElementById('manualNameBox').classList.remove('hidden');
           modelSel.classList.add('hidden');
         } else {
-          manualBox.classList.add('hidden');
+          document.getElementById('manualNameBox').classList.add('hidden');
           modelSel.classList.remove('hidden');
           modelSel.innerHTML = carDatabase[brand].map(m => `<option value="${m}">${m}</option>`).join('');
         }
@@ -188,11 +183,8 @@
         const pt = document.getElementById('powertrainType').value;
         const count = parseInt(document.getElementById('emCount').value) || 0;
         const showEm = (pt !== 'gasoline' && pt !== 'diesel');
-        
         document.getElementById('motorsGrid').classList.toggle('hidden', !(showEm && count > 0));
-        for(let i=1; i<=4; i++) {
-          document.getElementById(`em${i}Box`).classList.toggle('hidden', i > count);
-        }
+        for(let i=1; i<=4; i++) document.getElementById(`em${i}Box`).classList.toggle('hidden', i > count);
         calculate();
       };
 
@@ -203,7 +195,6 @@
       
       updateModels();
       updateMotors();
-      tg.expand();
       fetchRates();
     }
 
@@ -220,184 +211,99 @@
       } catch (e) {}
     }
 
-    // ЛОГИКА ТКС ПОШЛИНА
-    function getDuty(priceEur, cc, age, pt, method) {
-      if (pt === 'electric') {
-        // Электрички: пошлина 15% всегда (и для ФЛ, и для ЮЛ)
-        return priceEur * 0.15 * state.rates.EUR;
-      }
-      if (method === 'commercial') {
-        // Коммерция ДВС/Гибрид: 15% (до 3 лет) или 20% (старше 3)
-        return priceEur * (age < 3 ? 0.15 : 0.20) * state.rates.EUR;
-      }
-      // Физлицо ДВС/Гибрид: ЕТС (Единая ставка в евро/см3)
-      if (age < 3) {
-        let pct = 0.48, minEur = 3.5;
-        if (priceEur <= 8500) { pct = 0.54; minEur = 2.5; }
-        else if (priceEur <= 16700) { minEur = 3.5; }
-        else if (priceEur <= 42300) { minEur = 5.5; }
-        else if (priceEur <= 84500) { minEur = 7.5; }
-        else { minEur = 15; }
-        return Math.max(priceEur * pct, cc * minEur) * state.rates.EUR;
-      }
-      const r = age <= 5 ? (cc <= 1000 ? 1.5 : cc <= 1500 ? 1.7 : cc <= 1800 ? 2.5 : cc <= 2300 ? 2.7 : cc <= 3000 ? 3.0 : 3.6) 
-                         : (cc <= 1000 ? 3.0 : cc <= 1500 ? 3.2 : cc <= 1800 ? 3.5 : cc <= 2300 ? 4.8 : cc <= 3000 ? 5.0 : 5.7);
-      return cc * r * state.rates.EUR;
-    }
-
-    // ТАБЛИЦА УТИЛЬСБОРА 2026
     function getUtilFee(method, pt, cc, hp, age) {
       const isNew = age < 3;
       const isPersonal = method === 'personal';
       const base = 20000;
-
-      // Проверка на льготу
       const isEVorSeries = (pt === 'electric' || pt === 'seriesHybrid');
+
+      // Льготный утиль из PDF: только ФЛ + ДВС до 3.0 + до 160 л.с. ИЛИ Электро до 80 л.с. [cite: 4]
       const isLgota = isPersonal && cc <= 3000 && 
                       ((isEVorSeries && hp <= 80) || (!isEVorSeries && hp <= 160));
 
       if (isLgota) return { amount: isNew ? 3400 : 5200, note: "Льготный (ФЛ)" };
 
-      // Коммерческая сетка
+      // Коммерческая сетка на 1 января 2026 года 
       let k = 0;
       if (isEVorSeries) {
         if (hp <= 80) k = isNew ? 40.04 : 70.44;
-        else if (hp <= 100) k = isNew ? 49.56 : 82.08;
         else if (hp <= 130) k = isNew ? 65.88 : 95.64;
-        else if (hp <= 160) k = isNew ? 78.00 : 111.36;
         else if (hp <= 190) k = isNew ? 92.40 : 129.72;
-        else if (hp <= 220) k = isNew ? 109.68 : 151.20;
-        else if (hp <= 250) k = isNew ? 129.96 : 176.16;
-        else if (hp <= 280) k = isNew ? 153.96 : 205.20;
         else k = isNew ? 182.40 : 239.04;
       } else {
         if (cc <= 2000) {
           if (hp <= 160) k = isNew ? 40.04 : 70.44;
-          else if (hp <= 190) k = isNew ? 45.00 : 74.64;
           else if (hp <= 220) k = isNew ? 47.64 : 79.20;
-          else if (hp <= 250) k = isNew ? 50.52 : 83.88;
-          else if (hp <= 280) k = isNew ? 57.12 : 91.92;
-          else if (hp <= 310) k = isNew ? 64.56 : 100.56;
           else if (hp <= 340) k = isNew ? 72.96 : 110.16;
-          else if (hp <= 370) k = isNew ? 83.16 : 120.60;
-          else if (hp <= 400) k = isNew ? 94.80 : 132.00;
-          else if (hp <= 430) k = isNew ? 108.00 : 144.60;
-          else if (hp <= 460) k = isNew ? 123.24 : 158.40;
-          else if (hp <= 500) k = isNew ? 140.40 : 173.40;
           else k = isNew ? 160.08 : 189.84;
         } else if (cc <= 3000) {
           if (hp <= 160) k = isNew ? 112.52 : 170.36;
-          else if (hp <= 190) k = isNew ? 115.34 : 172.80;
-          else if (hp <= 220) k = isNew ? 118.20 : 175.08;
           else if (hp <= 250) k = isNew ? 120.12 : 177.60;
-          else if (hp <= 280) k = isNew ? 126.00 : 183.00;
-          else if (hp <= 310) k = isNew ? 131.04 : 188.52;
-          else if (hp <= 340) k = isNew ? 136.32 : 193.68;
-          else if (hp <= 370) k = isNew ? 141.72 : 199.08;
-          else if (hp <= 400) k = isNew ? 147.48 : 204.72;
-          else if (hp <= 430) k = isNew ? 153.36 : 210.48;
-          else if (hp <= 460) k = isNew ? 159.48 : 216.36;
-          else if (hp <= 500) k = isNew ? 165.84 : 222.36;
           else k = isNew ? 172.44 : 228.60;
-        } else if (cc <= 3500) {
-          k = isNew ? 144.00 : 212.40; // Среднее для 3-3.5
         } else {
-          k = isNew ? 229.08 : 344.28; // Свыше 3.5
+          k = isNew ? 229.08 : 344.28;
         }
       }
       return { amount: base * k, note: `Коммерческий (К=${k.toFixed(2)})` };
     }
 
     function calculate() {
-      // Возраст
       const year = parseInt(document.getElementById('releaseYear').value) || 2023;
-      const month = parseInt(document.getElementById('releaseMonth').value) || 1;
-      const d = new Date();
-      const ageMonths = (d.getFullYear() - year) * 12 + (d.getMonth() + 1 - month);
-      const age = ageMonths / 12;
-      document.getElementById('ageInfo').innerText = `Возраст: ${age.toFixed(1)} лет`;
+      const age = new Date().getFullYear() - year;
+      document.getElementById('ageInfo').innerText = `Возраст: ~${age} лет`;
 
-      // Мощность
       const pt = document.getElementById('powertrainType').value;
       const iceHp = parseFloat(document.getElementById('powerIceHp').value) || 0;
-      let em30 = 0;
       const mCount = parseInt(document.getElementById('emCount').value) || 0;
-      
+      let em30 = 0;
       if (pt !== 'gasoline' && pt !== 'diesel') {
         let sumPeak = 0;
         for (let i=1; i<=mCount; i++) sumPeak += (parseFloat(document.getElementById(`powerEm${i}`).value) || 0);
         em30 = sumPeak * 0.45;
       }
       document.getElementById('power30Info').value = em30.toFixed(1) + ' л.с.';
-      
-      let totalHp = 0;
-      if (pt === 'electric') totalHp = em30;
-      else if (pt === 'seriesHybrid' || pt === 'parallelHybrid') totalHp = iceHp + em30;
-      else totalHp = iceHp;
+      const totalHp = (pt === 'electric') ? em30 : (iceHp + em30);
       document.getElementById('powerTotalInfo').value = totalHp.toFixed(1) + ' л.с.';
 
-      // Вводные
       const price = parseFloat(document.getElementById('purchasePrice').value) || 0;
       const cur = document.getElementById('purchaseCurrency').value;
-      const cc = pt === 'electric' ? 0 : (parseFloat(document.getElementById('engineCc').value) || 0);
+      const cc = (pt === 'electric') ? 0 : (parseFloat(document.getElementById('engineCc').value) || 0);
       const method = document.getElementById('importMethod').value;
-
-      const priceRub = price * (state.rates[cur] || 1);
+      const priceRub = price * state.rates[cur];
       const priceEur = priceRub / state.rates.EUR;
-      const customsValueRub = priceRub; // Упрощенно база = цена
-
-      // Сбор за оформление
-      let feeRub = 3100;
-      if (customsValueRub > 1200000) feeRub = 8530;
-      if (customsValueRub > 2700000) feeRub = 12000;
-      if (customsValueRub > 4200000) feeRub = 15500;
-      if (customsValueRub > 7000000) feeRub = 23000;
 
       // Пошлина
-      const duty = getDuty(priceEur, cc, age, pt, method);
-
-      // Акциз и НДС (Только если Коммерция ИЛИ Электричка)
-      let excise = 0, vat = 0;
-      const paysExciseVat = (method === 'commercial') || (pt === 'electric');
-      
-      if (paysExciseVat) {
-        let exRate = 0;
-        if (totalHp > 90 && totalHp <= 150) exRate = 68;
-        else if (totalHp <= 200) exRate = 636;
-        else if (totalHp <= 300) exRate = 1044;
-        else if (totalHp <= 400) exRate = 1784;
-        else if (totalHp <= 500) exRate = 1845;
-        else if (totalHp > 500) exRate = 1900;
-        excise = totalHp * exRate;
-
-        vat = (customsValueRub + duty + excise) * 0.20;
+      let duty = 0;
+      if (pt === 'electric') {
+          duty = priceRub * 0.15; // Электро всегда 15%
+      } else if (method === 'commercial') {
+          duty = priceRub * (age < 3 ? 0.15 : 0.20);
+      } else {
+          // ЕТС для физлиц
+          if (age < 3) {
+              let minEur = priceEur <= 8500 ? 2.5 : 3.5;
+              duty = Math.max(priceEur * 0.48, cc * minEur) * state.rates.EUR;
+          } else {
+              const r = age <= 5 ? (cc <= 1500 ? 1.7 : 3.0) : (cc <= 1500 ? 3.2 : 5.0);
+              duty = cc * r * state.rates.EUR;
+          }
       }
 
-      // Утильсбор
       const util = getUtilFee(method, pt, cc, totalHp, age);
-
-      // Допы
-      const delivery = parseFloat(document.getElementById('deliveryRub').value) || 0;
-      const acz = parseFloat(document.getElementById('aczFeeRub').value) || 0;
-
-      // ИТОГ
-      const taxes = feeRub + duty + excise + vat + util.amount;
-      const total = priceRub + taxes + delivery + acz;
-
-      const fmt = (v) => Math.round(v).toLocaleString('ru-RU') + ' ₽';
-      document.getElementById('totalRub').innerText = fmt(total);
-      document.getElementById('utilNote').innerText = `Утильсбор: ${util.note}`;
-
-      let rowsHtml = `<div class="row"><span>Цена в Китае</span><span>${fmt(priceRub)}</span></div>`;
-      rowsHtml += `<div class="row"><span>Сбор за оформление</span><span>${fmt(feeRub)}</span></div>`;
-      rowsHtml += `<div class="row"><span>Таможенная пошлина</span><span>${fmt(duty)}</span></div>`;
-      if (excise > 0) rowsHtml += `<div class="row"><span>Акциз</span><span>${fmt(excise)}</span></div>`;
-      if (vat > 0) rowsHtml += `<div class="row"><span>НДС 20%</span><span>${fmt(vat)}</span></div>`;
-      rowsHtml += `<div class="row"><span>Утильсбор</span><span>${fmt(util.amount)}</span></div>`;
-      rowsHtml += `<div class="row"><span>Доставка, СБКТС, Брокер</span><span>${fmt(delivery)}</span></div>`;
-      rowsHtml += `<div class="row"><span>Комиссия ACZ</span><span>${fmt(acz)}</span></div>`;
+      const fee = priceRub > 1200000 ? 8530 : 3100;
+      const service = 120000 + 150000; // Комиссия + логистика
       
-      document.getElementById('breakdown').innerHTML = rowsHtml;
+      const total = priceRub + duty + util.amount + fee + service;
+      const fmt = (v) => Math.round(v).toLocaleString('ru-RU') + ' ₽';
+      
+      document.getElementById('totalRub').innerText = fmt(total);
+      document.getElementById('utilNote').innerText = `Утилизационный сбор: ${util.note}`;
+      document.getElementById('breakdown').innerHTML = `
+        <div class="row"><span>Цена в Китае</span><span>${fmt(priceRub)}</span></div>
+        <div class="row"><span>Таможня</span><span>${fmt(duty)}</span></div>
+        <div class="row"><span>Утильсбор</span><span>${fmt(util.amount)}</span></div>
+        <div class="row"><span>Доставка и комиссия</span><span>${fmt(service)}</span></div>
+      `;
     }
 
     document.getElementById('sendData').onclick = function() {
@@ -405,17 +311,17 @@
                   ? document.getElementById('manualCarName').value 
                   : document.getElementById('carBrand').value + ' ' + document.getElementById('carModel').value;
       
-      const res = {
+      const data = {
         car_name: car,
         total_price: document.getElementById('totalRub').innerText,
         method: document.getElementById('importMethod').value === 'personal' ? 'ФЛ' : 'ЮЛ',
         hp: document.getElementById('powerTotalInfo').value
       };
       
-      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.sendData) {
-        window.Telegram.WebApp.sendData(JSON.stringify(res));
+      if (tg.sendData) {
+          tg.sendData(JSON.stringify(data));
       } else {
-        alert("Заявка: " + JSON.stringify(res));
+          alert("Отправка возможна только через кнопку в боте!");
       }
     };
 
