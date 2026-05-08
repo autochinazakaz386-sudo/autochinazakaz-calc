@@ -53,7 +53,6 @@
     .row:last-child { border-bottom: none; }
     .row span:last-child { font-weight: 600; color: #fff; }
     .hidden { display: none !important; }
-    .highlight-box { background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
     .badge { display: inline-block; padding: 4px 8px; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 11px; margin-bottom: 12px; font-weight: 600; }
   </style>
 </head>
@@ -129,7 +128,7 @@
   </div>
 
   <div class="card">
-    <h2>2. Покупка и Доставка</h2>
+    <h2>2. Покупка и Расходы</h2>
     <div class="grid">
       <div><label>Цена автомобиля</label><input type="number" id="purchasePrice" value="150000"></div>
       <div><label>Валюта</label>
@@ -140,15 +139,19 @@
         </select>
       </div>
     </div>
+    
     <div class="grid">
-      <div><label>Логистика + СБКТС (₽)</label><input type="number" id="deliveryRub" value="150000"></div>
-      <div><label>Комиссия ACZ (₽)</label><input type="number" id="aczFeeRub" value="120000"></div>
+      <div><label>Комиссия экспортёра + оформление в Китае (₽)</label><input type="number" id="chinaExportRub" value="150000"></div>
+      <div><label>Комиссия ACZ (₽)</label><input type="number" id="aczFeeRub" value="80000"></div>
     </div>
+    
+    <label>Расходы на границе (Транзит, ПТД, СВХ, ЭПТС) (₽)</label>
+    <input type="number" id="borderExpensesRub" value="85000">
   </div>
 
   <div class="card total-box">
     <div class="badge" id="ageInfo">Возраст: расчет...</div>
-    <div style="font-size: 13px; color: var(--muted);">Итого под ключ с ЭПТС:</div>
+    <div style="font-size: 13px; color: var(--muted);">Итого под ключ во Владивостоке:</div>
     <div class="total-price" id="totalRub">0 ₽</div>
     <div id="utilNote" style="font-size: 12px; color: var(--muted); margin-bottom: 20px;">Утильсбор: расчет...</div>
     
@@ -158,39 +161,19 @@
   </div>
 
   <script>
-    // МЕГА-БАЗА (32 бренда, >300 моделей)
     const carDatabase = {
       "Geely": ["Monjaro", "Tugella", "Coolray", "Preface", "Atlas", "Emgrand", "Okavango", "Xingyue L", "Galaxy L7", "Galaxy E8"],
       "Changan": ["UNI-K", "UNI-V", "UNI-T", "CS55 Plus", "CS75 Plus", "CS95", "Hunter", "Deepal S7", "Deepal SL03", "Alsvin"],
       "Chery": ["Tiggo 8 Pro Max", "Tiggo 7 Pro", "Tiggo 4 Pro", "Arrizo 8", "Explore 06", "Tiggo 9", "EQ1"],
       "Exeed": ["RX", "VX", "TXL", "LX", "Sterra ES", "Sterra ET", "Yaoguang", "Lanyue"],
-      "Omoda / Jaecoo": ["Omoda C5", "Omoda S5", "Jaecoo J7", "Jaecoo J8"],
-      "BYD": ["Song Plus", "Han", "Tang", "Seal", "Qin Plus", "Yuan Plus", "Dolphin", "Seagull", "Destroyer 05", "Frigate 07", "Yangwang U8"],
       "Li Auto": ["L6", "L7", "L8", "L9", "Mega"],
       "Zeekr": ["001", "007", "009", "X", "Mix"],
-      "Haval": ["Jolion", "Dargo", "F7", "H9", "H6", "M6", "Xiaolong Max", "Poer"],
-      "Tank": ["Tank 300", "Tank 400", "Tank 500", "Tank 700"],
-      "Voyah": ["Free", "Dream", "Passion"],
       "Xiaomi": ["SU7", "SU7 Pro", "SU7 Max"],
-      "Nio": ["ET5", "ET7", "ES6", "ES7", "ES8", "EC6", "EC7"],
-      "Xpeng": ["G6", "G9", "P7i", "P5", "X9"],
-      "Avatr": ["Avatr 11", "Avatr 12"],
-      "AITO": ["M5", "M7", "M9"],
-      "Hongqi": ["H5", "H9", "HS5", "E-HS9", "HQ9", "OS8"],
-      "GAC": ["GS8", "M8", "Empow", "GS5"],
-      "FAW": ["Bestune T77", "Bestune T99", "Bestune B70"],
-      "JAC": ["J7", "T6", "T8 Pro", "JS6"],
-      "Jetour": ["Dashing", "X70 Plus", "X90 Plus", "Traveller", "T2"],
-      "BAIC": ["U5 Plus", "X35", "BJ40", "BJ60"],
       "Toyota": ["Camry", "RAV4", "Avalon", "Highlander", "Land Cruiser 300", "Prado", "bZ4X", "bZ3", "Corolla", "Alphard"],
       "Honda": ["CR-V", "Accord", "Civic", "HR-V", "ZR-V", "Breeze", "Vezel", "Inspire"],
-      "Nissan": ["X-Trail", "Qashqai", "Teana", "Sylphy", "Ariya", "Pathfinder"],
       "Volkswagen": ["Tiguan L", "Teramont", "Passat", "ID.4 CROZZ", "ID.6 CROZZ", "Tayron", "Magotan", "Golf"],
-      "Audi": ["A4L", "A6L", "Q5L", "Q4 e-tron", "Q5 e-tron"],
       "BMW": ["3 Series", "5 Series", "X3", "X5", "i3", "iX3"],
       "Mercedes-Benz": ["C-Class", "E-Class", "GLC", "GLE", "EQE", "EQC"],
-      "Kia": ["Sportage", "K5", "Carnival", "Sorento"],
-      "Hyundai": ["Tucson", "Santa Fe", "Palisade", "Elantra", "Sonata"],
       "Другая марка...": ["Ввести вручную..."]
     };
 
@@ -257,14 +240,8 @@
       const isPersonal = method === 'personal';
       const base = 20000;
       const isEVorSeries = (pt === 'electric' || pt === 'seriesHybrid');
-
-      // Льгота из таблицы 2026
-      const isLgota = isPersonal && cc <= 3000 && 
-                      ((isEVorSeries && hp <= 80) || (!isEVorSeries && hp <= 160));
-
+      const isLgota = isPersonal && cc <= 3000 && ((isEVorSeries && hp <= 80) || (!isEVorSeries && hp <= 160));
       if (isLgota) return { amount: isNew ? 3400 : 5200, note: "Льготный (ФЛ)" };
-
-      // Коммерция 2026
       let k = 0;
       if (isEVorSeries) {
         if (hp <= 80) k = isNew ? 40.04 : 70.44;
@@ -281,9 +258,7 @@
           if (hp <= 160) k = isNew ? 112.52 : 170.36;
           else if (hp <= 250) k = isNew ? 120.12 : 177.60;
           else k = isNew ? 172.44 : 228.60;
-        } else {
-          k = isNew ? 229.08 : 344.28;
-        }
+        } else { k = isNew ? 229.08 : 344.28; }
       }
       return { amount: base * k, note: `Коммерческий (К=${k.toFixed(2)})` };
     }
@@ -299,7 +274,6 @@
       const iceHp = parseFloat(document.getElementById('powerIceHp').value) || 0;
       const mCount = parseInt(document.getElementById('emCount').value) || 0;
       let em30 = 0;
-      
       if (pt !== 'gasoline' && pt !== 'diesel') {
         let sumPeak = 0;
         for (let i=1; i<=mCount; i++) sumPeak += (parseFloat(document.getElementById(`powerEm${i}`).value) || 0);
@@ -313,17 +287,13 @@
       const cur = document.getElementById('purchaseCurrency').value;
       const cc = (pt === 'electric') ? 0 : (parseFloat(document.getElementById('engineCc').value) || 0);
       const method = document.getElementById('importMethod').value;
-      
       const priceRub = price * state.rates[cur];
       const priceEur = priceRub / state.rates.EUR;
 
-      // Пошлина
       let duty = 0;
-      if (pt === 'electric') {
-          duty = priceRub * 0.15;
-      } else if (method === 'commercial') {
-          duty = priceRub * (age < 3 ? 0.15 : 0.20);
-      } else {
+      if (pt === 'electric') { duty = priceRub * 0.15; }
+      else if (method === 'commercial') { duty = priceRub * (age < 3 ? 0.15 : 0.20); }
+      else {
           if (age < 3) {
               let minEur = priceEur <= 8500 ? 2.5 : 3.5;
               duty = Math.max(priceEur * 0.48, cc * minEur) * state.rates.EUR;
@@ -333,7 +303,6 @@
           }
       }
 
-      // Акциз и НДС
       let excise = 0, vat = 0;
       if (method === 'commercial' || pt === 'electric') {
         let exRate = 0;
@@ -350,59 +319,41 @@
       const util = getUtilFee(method, pt, cc, totalHp, age);
       const fee = priceRub > 1200000 ? 8530 : 3100;
       
-      const delivery = parseFloat(document.getElementById('deliveryRub').value) || 0;
+      const chinaExport = parseFloat(document.getElementById('chinaExportRub').value) || 0;
       const acz = parseFloat(document.getElementById('aczFeeRub').value) || 0;
-      const service = delivery + acz;
+      const border = parseFloat(document.getElementById('borderExpensesRub').value) || 0;
+      const service = chinaExport + acz + border;
       
       const taxes = duty + util.amount + fee + excise + vat;
       const total = priceRub + taxes + service;
-      
       const fmt = (v) => Math.round(v).toLocaleString('ru-RU') + ' ₽';
       
       document.getElementById('totalRub').innerText = fmt(total);
       document.getElementById('utilNote').innerText = `Утильсбор: ${util.note}`;
       
       let html = `<div class="row"><span>Цена авто</span><span>${fmt(priceRub)}</span></div>`;
-      html += `<div class="row"><span>Таможня (Пошлина + Сбор)</span><span>${fmt(duty + fee)}</span></div>`;
-      if (excise > 0) html += `<div class="row"><span>Акциз + НДС 20%</span><span>${fmt(excise + vat)}</span></div>`;
+      html += `<div class="row"><span>Таможня</span><span>${fmt(duty + fee + excise + vat)}</span></div>`;
       html += `<div class="row"><span>Утильсбор</span><span>${fmt(util.amount)}</span></div>`;
-      html += `<div class="row"><span>Логистика и Комиссия</span><span>${fmt(service)}</span></div>`;
-      
+      html += `<div class="row"><span>Расходы (Китай + ACZ + Граница)</span><span>${fmt(service)}</span></div>`;
       document.getElementById('breakdown').innerHTML = html;
     }
 
-    // БЕЗОТКАЗНАЯ ОТПРАВКА ДАННЫХ
     document.getElementById('sendData').onclick = function() {
       const car = document.getElementById('carBrand').value === "Другая марка..." 
                   ? document.getElementById('manualCarName').value 
                   : document.getElementById('carBrand').value + ' ' + document.getElementById('carModel').value;
       const price = document.getElementById('totalRub').innerText;
-      const method = document.getElementById('importMethod').value === 'personal' ? 'ФЛ' : 'ЮЛ';
-      
-      const data = { car_name: car, total_price: price, method: method, hp: document.getElementById('powerTotalInfo').value };
-      
-      // Формируем текст для ручной отправки, если API заблокировано
-      const manualText = `🔥 ЗАЯВКА НА АВТО 🔥\nАвто: ${car}\nЦена под ключ: ${price}\nВвоз: ${method}\n\nХочу заказать или узнать подробности!`;
+      const manualText = `🔥 ЗАЯВКА НА АВТО 🔥\nАвто: ${car}\nЦена под ключ: ${price}\n\nХочу заказать!`;
       const tgLink = `https://t.me/autochinazakaz_1?text=${encodeURIComponent(manualText)}`;
-
-      // Пробуем отправить через WebApp (работает, если открыто из клавиатуры бота)
       if (tg.sendData) {
           try {
-              tg.sendData(JSON.stringify(data));
-              // Если окно не закрылось через 1 секунду, значит sendData заблокирован (открыто из канала)
-              setTimeout(() => {
-                  window.location.href = tgLink;
-              }, 1000);
-          } catch (e) {
-              window.location.href = tgLink;
-          }
-      } else {
-          // Если API вообще не отвечает
-          window.location.href = tgLink;
-      }
+              tg.sendData(JSON.stringify({ car_name: car, total_price: price }));
+              setTimeout(() => { window.location.href = tgLink; }, 1000);
+          } catch (e) { window.location.href = tgLink; }
+      } else { window.location.href = tgLink; }
     };
-
     init();
   </script>
 </body>
-</html>
+  </html>
+                                           
