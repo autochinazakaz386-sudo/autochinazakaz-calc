@@ -291,7 +291,8 @@
       const priceEur = priceRub / state.rates.EUR;
 
       let duty = 0;
-      if (pt === 'electric') { duty = priceRub * 0.15; }
+      // ИЗМЕНЕНИЕ: Последовательный гибрид теперь приравнен к электро для пошлины (15%)
+      if (pt === 'electric' || pt === 'seriesHybrid') { duty = priceRub * 0.15; }
       else if (method === 'commercial') { duty = priceRub * (age < 3 ? 0.15 : 0.20); }
       else {
           if (age < 3) {
@@ -304,7 +305,8 @@
       }
 
       let excise = 0, vat = 0;
-      if (method === 'commercial' || pt === 'electric') {
+      // ИЗМЕНЕНИЕ: Для последовательных гибридов теперь также считается НДС и Акциз
+      if (method === 'commercial' || pt === 'electric' || pt === 'seriesHybrid') {
         let exRate = 0;
         if (totalHp > 90 && totalHp <= 150) exRate = 68;
         else if (totalHp <= 200) exRate = 636;
@@ -332,7 +334,7 @@
       document.getElementById('utilNote').innerText = `Утильсбор: ${util.note}`;
       
       let html = `<div class="row"><span>Цена авто</span><span>${fmt(priceRub)}</span></div>`;
-      html += `<div class="row"><span>Таможня</span><span>${fmt(duty + fee + excise + vat)}</span></div>`;
+      html += `<div class="row"><span>Таможня (Пошлина+Акциз+НДС+Сбор)</span><span>${fmt(duty + fee + excise + vat)}</span></div>`;
       html += `<div class="row"><span>Утильсбор</span><span>${fmt(util.amount)}</span></div>`;
       html += `<div class="row"><span>Расходы (Китай + ACZ + Граница)</span><span>${fmt(service)}</span></div>`;
       document.getElementById('breakdown').innerHTML = html;
@@ -355,5 +357,4 @@
     init();
   </script>
 </body>
-  </html>
-                                           
+</html>
