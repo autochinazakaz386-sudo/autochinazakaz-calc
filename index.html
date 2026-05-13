@@ -98,9 +98,15 @@
       </div>
     </div>
 
+    <label>Единицы измерения мощности</label>
+    <select id="powerUnit">
+      <option value="hp">Лошадиные силы (л.с.)</option>
+      <option value="kw">Киловатты (кВт)</option>
+    </select>
+
     <div class="grid">
       <div><label>Объем ДВС, см³</label><input type="number" id="engineCc" value="1998"></div>
-      <div><label>Мощность ДВС, л.с.</label><input type="number" id="powerIceHp" value="190"></div>
+      <div><label id="lblIcePower">Мощность ДВС, л.с.</label><input type="number" id="powerIceHp" value="190"></div>
     </div>
 
     <label>Кол-во электромоторов</label>
@@ -114,10 +120,10 @@
 
     <div id="motorsGrid" class="hidden highlight-box">
       <div class="grid">
-        <div id="em1Box" class="hidden"><label>Мотор 1 (л.с.)</label><input type="number" id="powerEm1" value="0"></div>
-        <div id="em2Box" class="hidden"><label>Мотор 2 (л.с.)</label><input type="number" id="powerEm2" value="0"></div>
-        <div id="em3Box" class="hidden"><label>Мотор 3 (л.с.)</label><input type="number" id="powerEm3" value="0"></div>
-        <div id="em4Box" class="hidden"><label>Мотор 4 (л.с.)</label><input type="number" id="powerEm4" value="0"></div>
+        <div id="em1Box" class="hidden"><label id="lblEm1">Мотор 1 (л.с.)</label><input type="number" id="powerEm1" value="0"></div>
+        <div id="em2Box" class="hidden"><label id="lblEm2">Мотор 2 (л.с.)</label><input type="number" id="powerEm2" value="0"></div>
+        <div id="em3Box" class="hidden"><label id="lblEm3">Мотор 3 (л.с.)</label><input type="number" id="powerEm3" value="0"></div>
+        <div id="em4Box" class="hidden"><label id="lblEm4">Мотор 4 (л.с.)</label><input type="number" id="powerEm4" value="0"></div>
       </div>
       <label style="color:var(--blue)">30-мин эл. мощность (×0.45)</label>
       <input type="text" id="power30Info" readonly value="0 л.с.">
@@ -212,13 +218,26 @@
         calculate();
       };
 
+      const updatePowerLabels = () => {
+        const isKw = document.getElementById('powerUnit').value === 'kw';
+        const unitLabel = isKw ? 'кВт' : 'л.с.';
+        document.getElementById('lblIcePower').innerText = `Мощность ДВС, ${unitLabel}`;
+        for (let i = 1; i <= 4; i++) {
+          const lbl = document.getElementById(`lblEm${i}`);
+          if (lbl) lbl.innerText = `Мотор ${i} (${unitLabel})`;
+        }
+        calculate();
+      };
+
       bSel.addEventListener('change', updateModels);
       document.getElementById('powertrainType').addEventListener('change', updateMotors);
       document.getElementById('emCount').addEventListener('change', updateMotors);
+      document.getElementById('powerUnit').addEventListener('change', updatePowerLabels);
       document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', calculate));
       
       updateModels();
       updateMotors();
+      updatePowerLabels();
       fetchRates();
     }
 
@@ -271,14 +290,25 @@
       document.getElementById('ageInfo').innerText = `Возраст: ${age.toFixed(1)} лет`;
 
       const pt = document.getElementById('powertrainType').value;
-      const iceHp = parseFloat(document.getElementById('powerIceHp').value) || 0;
+      const isKw = document.getElementById('powerUnit').value === 'kw';
+      const kwToHp = 1.35962; // Таможенный коэффициент перевода кВт в л.с.
+      
+      const rawIce = parseFloat(document.getElementById('powerIceHp').value) || 0;
+      const iceHp = isKw ? rawIce * kwToHp : rawIce;
+
       const mCount = parseInt(document.getElementById('emCount').value) || 0;
+      let sumPeakRaw = 0;
+      for (let i=1; i<=mCount; i++) {
+        sumPeakRaw += (parseFloat(document.getElementById(`powerEm${i}`).value) || 0);
+      }
+      const sumPeakHp = isKw ? sumPeakRaw * kwToHp : sumPeakRaw;
+      
       let em30 = 0;
       if (pt !== 'gasoline' && pt !== 'diesel') {
-        let sumPeak = 0;
-        for (let i=1; i<=mCount; i++) sumPeak += (parseFloat(document.getElementById(`powerEm${i}`).value) || 0);
-        em30 = sumPeak * 0.45;
+        em30 = sumPeakHp * 0.45;
       }
+      
+      // Итоговая мощность для таможни выводится всегда в л.с.
       document.getElementById('power30Info').value = em30.toFixed(1) + ' л.с.';
       const totalHp = (pt === 'electric') ? em30 : (iceHp + em30);
       document.getElementById('powerTotalInfo').value = totalHp.toFixed(1) + ' л.с.';
@@ -291,7 +321,6 @@
       const priceEur = priceRub / state.rates.EUR;
 
       let duty = 0;
-      // ИЗМЕНЕНИЕ: Последовательный гибрид теперь приравнен к электро для пошлины (15%)
       if (pt === 'electric' || pt === 'seriesHybrid') { duty = priceRub * 0.15; }
       else if (method === 'commercial') { duty = priceRub * (age < 3 ? 0.15 : 0.20); }
       else {
@@ -305,7 +334,6 @@
       }
 
       let excise = 0, vat = 0;
-      // ИЗМЕНЕНИЕ: Для последовательных гибридов теперь также считается НДС и Акциз
       if (method === 'commercial' || pt === 'electric' || pt === 'seriesHybrid') {
         let exRate = 0;
         if (totalHp > 90 && totalHp <= 150) exRate = 68;
