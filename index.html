@@ -260,12 +260,19 @@
       const base = 20000;
       const isEVorSeries = (pt === 'electric' || pt === 'seriesHybrid');
       const isLgota = isPersonal && cc <= 3000 && ((isEVorSeries && hp <= 80) || (!isEVorSeries && hp <= 160));
+      
       if (isLgota) return { amount: isNew ? 3400 : 5200, note: "Льготный (ФЛ)" };
+      
       let k = 0;
       if (isEVorSeries) {
         if (hp <= 80) k = isNew ? 40.04 : 70.44;
+        else if (hp <= 100) k = isNew ? 49.56 : 82.08;
         else if (hp <= 130) k = isNew ? 65.88 : 95.64;
+        else if (hp <= 160) k = isNew ? 78.00 : 111.36;
         else if (hp <= 190) k = isNew ? 92.40 : 129.72;
+        else if (hp <= 220) k = isNew ? 109.68 : 151.20;
+        else if (hp <= 250) k = isNew ? 129.96 : 176.16;
+        else if (hp <= 280) k = isNew ? 153.96 : 205.20;
         else k = isNew ? 182.40 : 239.04;
       } else {
         if (cc <= 2000) {
@@ -291,7 +298,7 @@
 
       const pt = document.getElementById('powertrainType').value;
       const isKw = document.getElementById('powerUnit').value === 'kw';
-      const kwToHp = 1.35962; // Таможенный коэффициент перевода кВт в л.с.
+      const kwToHp = 1.35962;
       
       const rawIce = parseFloat(document.getElementById('powerIceHp').value) || 0;
       const iceHp = isKw ? rawIce * kwToHp : rawIce;
@@ -308,7 +315,6 @@
         em30 = sumPeakHp * 0.45;
       }
       
-      // Итоговая мощность для таможни выводится всегда в л.с.
       document.getElementById('power30Info').value = em30.toFixed(1) + ' л.с.';
       const totalHp = (pt === 'electric') ? em30 : (iceHp + em30);
       document.getElementById('powerTotalInfo').value = totalHp.toFixed(1) + ' л.с.';
